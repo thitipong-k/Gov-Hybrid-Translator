@@ -1,0 +1,311 @@
+<?php
+/**
+ * Dashboard Module - หน้าหลักของ Plugin
+ * 
+ * รับผิดชอบในการ:
+ * - ลงทะเบียน Admin Menu
+ * - แสดงผล Dashboard หลักของ Plugin
+ * - ดึงข้อมูลสถิติและเนื้อหาสำหรับแสดงผล
+ * 
+ * @package GovHybridTranslator
+ * @since 1.0.0
+ * @updated 1.5.0 - เพิ่มการใช้ Custom Capabilities
+ * @updated 2.1.0 - ดึงข้อมูลสถิติจริงจาก database แทน mock data
+ */
+
+namespace GovHybridTranslator\Modules;
+
+// Prevent direct file access
+if (!defined('ABSPATH')) exit;
+
+use GovHybridTranslator\Core\Capabilities;
+use GovHybridTranslator\Core\TranslationMeta;
+use GovHybridTranslator\Core\TermTranslationMeta;
+
+class Dashboard {
+
+    /**
+     * ลงทะเบียน Module
+     * เพิ่ม Admin Menu เมื่อ WordPress โหลด admin
+     */
+    public function register() {
+        add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
+    }
+
+    /**
+     * เพิ่ม Admin Menu
+     * ใช้ ght_view_dashboard capability แทน manage_options
+     * เพื่อให้ Role อื่นๆ สามารถเข้าถึงได้ตามที่กำหนด
+     */
+    public function add_admin_menu() {
+        add_menu_page(
+            'Gov Hybrid Translator',           // Page title
+            'Gov Translator',                   // Menu title
+            'ght_view_dashboard',               // Capability - ใช้ custom cap
+            'gov-hybrid-translator',            // Menu slug
+            [ $this, 'render_dashboard' ],      // Callback function
+            'dashicons-translation',            // Icon
+            2                                   // Position
+        );
+    }
+
+    /**
+     * แสดงผล Dashboard
+     * ดึงข้อมูลทั้งหมดและส่งไปยัง View
+     */
+    public function render_dashboard() {
+        // ดึงข้อมูล Pages และ Posts ทั้งหมด
+        $all_pages = get_pages(['post_status' => 'publish', 'sort_column' => 'post_date', 'sort_order' => 'desc']);
+        $all_posts = get_posts(['post_status' => 'publish', 'numberposts' => -1]);
+        
+        // ดึงข้อมูล Categories และ Menus
+        $all_categories = get_terms(['taxonomy' => 'category', 'hide_empty' => false]);
+        $all_menus = wp_get_nav_menus();
+
+        // Calculate statistics
+        $total_pages = count($all_pages);
+        $total_posts = count($all_posts);
+        $total_content = $total_pages + $total_posts;
+        
+        // === ดึงข้อมูลจริงจาก Database ===
+        
+        // 1. นับ Glossary Terms จาก Custom Post Type
+        $glossary_terms = wp_count_posts('ght_glossary');
+        $glossary_terms = isset($glossary_terms->publish) ? $glossary_terms->publish : 0;
+        
+        // 2. ดึง Translation Memory Stats (ถ้ามี)
+        $tm_stats = \GovHybridTranslator\Modules\TranslationMemory::get_stats();
+        $ai_credits_used = ($tm_stats['hits'] ?? 0) + ($tm_stats['misses'] ?? 0) + ($tm_stats['saves'] ?? 0);
+        // AI Credits Limit: ดึงจาก settings หรือใช้ค่า based on usage
+        $ai_credits_limit = max($ai_credits_used * 2, 100); // อย่างน้อย 100 หรือ 2x ของ usage
+        
+        // 3. คำนวณ Success Rate จาก Translation Memory
+        $success_rate = $tm_stats['hit_rate'] ?? 0;
+        
+        // 4. ดึง Translation Status สำหรับ translated_count
+        $translation_status = new \GovHybridTranslator\Core\TranslationStatus();
+        $status_stats = $translation_status->get_statistics();
+        $translated_count = ($status_stats['translated'] ?? 0) + ($status_stats['partial'] ?? 0);
+        $pending_count = $status_stats['pending'] ?? 0;
+        
+        // 5. คำนวณ Error Rate (ยังไม่มีระบบ track จริง - ใช้ 0)
+        $error_rate = 0;
+        
+        // 6. Avg Translation Time (ยังไม่มีระบบ track - แสดง N/A)
+        $avg_translation_time = 'N/A';
+        
+        // === Language Distribution (ดึงข้อมูลจริง) ===
+        global $wpdb;
+        $settings = (new \GovHybridTranslator\Modules\Settings())->get_settings();
+        $target_languages = $settings['target_languages'] ?? ['en'];
+        
+        $language_distribution = [];
+        $lang_colors = [
+            'en' => '#3b82f6', 'zh' => '#ef4444', 'ja' => '#10b981',
+            'ko' => '#f59e0b', 'vi' => '#8b5cf6', 'my' => '#ec4899',
+            'de' => '#14b8a6', 'fr' => '#6366f1'
+        ];
+        $lang_names = [
+            'en' => 'English', 'zh' => 'Chinese', 'ja' => 'Japanese',
+            'ko' => 'Korean', 'vi' => 'Vietnamese', 'my' => 'Myanmar',
+            'de' => 'German', 'fr' => 'French'
+        ];
+        
+        foreach ($target_languages as $lang) {
+            // นับจำนวน posts/pages ที่มีการแปลเป็นภาษานี้
+            $count = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(DISTINCT post_id) FROM {$wpdb->postmeta} 
+                 WHERE meta_key = %s AND meta_value != ''",
+                '_ght_title_' . $lang
+            ));
+            
+            $language_distribution[$lang] = [
+                'name' => $lang_names[$lang] ?? strtoupper($lang),
+                'count' => intval($count),
+                'color' => $lang_colors[$lang] ?? '#6b7280'
+            ];
+        }
+        
+        // === Monthly Trends (ดึงข้อมูลจริงจาก post modified dates) ===
+        $monthly_trends = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month_start = date('Y-m-01', strtotime("-$i months"));
+            $month_end = date('Y-m-t', strtotime("-$i months"));
+            $month_name = date('M', strtotime("-$i months"));
+            
+            // นับ posts ที่มีการแปลในเดือนนี้ (based on meta update)
+            $count = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(DISTINCT pm.post_id) 
+                 FROM {$wpdb->postmeta} pm
+                 INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
+                 WHERE pm.meta_key LIKE '_ght_title_%'
+                 AND p.post_modified >= %s AND p.post_modified <= %s",
+                $month_start, $month_end . ' 23:59:59'
+            ));
+            
+            $monthly_trends[] = [
+                'month' => $month_name,
+                'translations' => max(intval($count), 0)
+            ];
+        }
+        
+        // ถ้าไม่มีข้อมูลเลย ให้แสดง 0
+        if (array_sum(array_column($monthly_trends, 'translations')) === 0) {
+            // ป้องกัน division by zero ใน chart
+            $monthly_trends[5]['translations'] = 1;
+        }
+        
+        // === Top Categories (ดึงข้อมูลจริง) ===
+        $top_categories = [];
+        $categories_query = $wpdb->get_results(
+            "SELECT t.name, COUNT(tr.object_id) as count
+             FROM {$wpdb->terms} t
+             INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+             INNER JOIN {$wpdb->term_relationships} tr ON tt.term_taxonomy_id = tr.term_taxonomy_id
+             INNER JOIN {$wpdb->postmeta} pm ON tr.object_id = pm.post_id
+             WHERE tt.taxonomy = 'category'
+             AND pm.meta_key LIKE '_ght_title_%'
+             AND pm.meta_value != ''
+             GROUP BY t.term_id
+             ORDER BY count DESC
+             LIMIT 5"
+        );
+        
+        if ($categories_query) {
+            foreach ($categories_query as $cat) {
+                $top_categories[] = [
+                    'name' => $cat->name,
+                    'count' => intval($cat->count)
+                ];
+            }
+        }
+        
+        // ถ้าไม่มี categories ที่มีการแปล แสดง placeholder
+        if (empty($top_categories)) {
+            $top_categories = [
+                ['name' => 'No translated categories yet', 'count' => 0]
+            ];
+        }
+        
+        // Filter Pages
+        $untranslated_pages = [];
+        $translated_pages = [];
+        foreach ($all_pages as $page) {
+            $lang = get_post_meta($page->ID, '_gov_translator_lang', true);
+            if ($lang === 'en') continue; // Skip EN pages
+
+            // ใช้ TranslationMeta แทน get_post_meta
+            $en_title = TranslationMeta::get_title($page->ID, 'en');
+            
+            if (!empty($en_title)) {
+                $translated_pages[] = $page;
+            } else {
+                $untranslated_pages[] = $page;
+            }
+        }
+
+        // Filter Posts - รองรับทั้ง clone-based และ meta-based translation
+        $untranslated_posts = [];
+        $translated_posts = [];
+        foreach ($all_posts as $post) {
+            $lang = get_post_meta($post->ID, '_gov_translator_lang', true);
+            if ($lang === 'en') continue;
+
+            $has_translation = false;
+            
+            // ตรวจสอบ Meta-based translation ก่อน
+            $en_title = TranslationMeta::get_title($post->ID, 'en');
+            if (!empty($en_title)) {
+                $has_translation = true;
+            }
+            
+            // ถ้าไม่มี meta-based → ตรวจสอบ Clone-based (legacy)
+            if (!$has_translation) {
+                $group_id = get_post_meta($post->ID, '_gov_translator_group_id', true);
+                if ($group_id) {
+                    $en_posts = get_posts([
+                        'post_type' => 'post',
+                        'meta_query' => [
+                            ['key' => '_gov_translator_group_id', 'value' => $group_id],
+                            ['key' => '_gov_translator_lang', 'value' => 'en']
+                        ],
+                        'fields' => 'ids',
+                        'posts_per_page' => 1
+                    ]);
+                    if (!empty($en_posts)) $has_translation = true;
+                }
+            }
+
+            if ($has_translation) {
+                $translated_posts[] = $post;
+            } else {
+                $untranslated_posts[] = $post;
+            }
+        }
+
+        // Filter Categories
+        $untranslated_categories = [];
+        $translated_categories = [];
+        if (!is_wp_error($all_categories)) {
+            foreach ($all_categories as $category) {
+                // ใช้ TermTranslationMeta แทน get_term_meta
+                $trans_name = TermTranslationMeta::get_name($category->term_id, 'en');
+                if (!empty($trans_name)) {
+                    $translated_categories[] = $category;
+                } else {
+                    $untranslated_categories[] = $category;
+                }
+            }
+        }
+
+        // Filter Menus
+        $untranslated_menus = [];
+        $translated_menus = [];
+        // For Menus, we list the MENU object itself, but we check if it has ANY untranslated items?
+        // Or do we list items? The UI shows Menus.
+        // Let's say: A menu is "Untranslated" if it has at least one item without translation.
+        // A menu is "Translated" if it has at least one item WITH translation (or all?).
+        // To fit the UI "Tasks" vs "Translated", let's put the Menu in "Tasks" if it has pending items.
+        // And put it in "Translated" if it has translated items. Note: A menu could be in BOTH if partially translated.
+        // But for simplicity, let's just pass the full list to the view and let the view filter items?
+        // No, the user wants "Flow".
+        // Let's filter:
+        // Tasks Tab: Menus that have items needing translation.
+        // Translated Tab: Menus that have translated items.
+        
+        if (!is_wp_error($all_menus)) {
+            foreach ($all_menus as $menu) {
+                $items = wp_get_nav_menu_items($menu->term_id);
+                $has_untranslated = false;
+                $has_translated = false;
+                
+                if ($items) {
+                    foreach ($items as $item) {
+                        // ใช้ TranslationMeta แทน get_post_meta
+                        $trans_title = TranslationMeta::get_title($item->ID, 'en');
+                        
+                        if (!empty($trans_title)) {
+                            $has_translated = true;
+                        } else {
+                            $has_untranslated = true;
+                        }
+                    }
+                }
+
+                if ($has_untranslated) $untranslated_menus[] = $menu;
+                if ($has_translated) $translated_menus[] = $menu;
+            }
+        }
+        
+        // Get current settings
+        $settings_obj = new \GovHybridTranslator\Modules\Settings();
+        $settings = $settings_obj->get_settings();
+        
+        // === ดึงข้อมูล Incomplete Translations จัดกลุ่มตาม Category ===
+        $content_reviewer = new ContentReviewer();
+        $incomplete_by_category = $content_reviewer->get_incomplete_translations_by_category(50);
+        $incomplete_pages = $content_reviewer->get_incomplete_page_translations(50);
+        
+        require GOV_HYBRID_TRANSLATOR_PATH . 'inc/Admin/views/dashboard-view.php';
+    }
+}

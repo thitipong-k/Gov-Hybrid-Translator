@@ -1,0 +1,118 @@
+/* Base Switcher Styles */
+.gov-hybrid-translator-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.gov-hybrid-translator-switcher img {
+    width: 30px;
+    height: auto;
+    display: block;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.gov-hybrid-translator-switcher span {
+    font-weight: 500;
+}
+
+/* Dual Layout Styles */
+.gov-switcher-dual {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gov-switcher-dual .gov-lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    color: #666;
+    transition: all 0.2s;
+    opacity: 0.8;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.gov-switcher-dual .gov-lang-btn:hover {
+    color: #333;
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.gov-switcher-dual .gov-lang-btn.active {
+    color: #4a90d9;
+    opacity: 1;
+    font-weight: 600;
+}
+
+.gov-switcher-dual .gov-separator {
+    color: #ddd;
+    font-size: 12px;
+}
+
+/* Floating Styles */
+.gov-switcher-floating {
+    position: fixed;
+    z-index: 999999;
+    background-color: #fff;
+    border: 2px solid #4a90d9;
+    border-radius: 8px;
+    padding: 10px 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.gov-switcher-floating:hover {
+    background-color: #f0f7ff;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+    transform: scale(1.02);
+}
+
+/* Positions */
+.gov-switcher-center-right {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+}
+
+.gov-switcher-center-right:hover {
+    padding-right: 20px;
+}
+
+.gov-switcher-top-right {
+    right: 20px;
+    top: 20px;
+    border-radius: 8px;
+}
+
+.gov-switcher-bottom-right {
+    right: 20px;
+    bottom: 20px;
+    border-radius: 8px;
+}
+
+/* Menu Item Styles */
+.gov-switcher-menu {
+    display: flex;
+    height: 100%;
+    padding: 0 10px;
+}
+
+/* Inline/Shortcode Styles */
+.gov-switcher-inline {
+    display: inline-flex;
+    padding: 5px 10px;
+    background: #f0f0f0;
+    border-radius: 4px;
+}

@@ -1,0 +1,285 @@
+/* Glossary Management Styles */
+
+.ght-glossary-container {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.ght-glossary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.ght-search-bar {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    min-width: 300px;
+}
+
+.ght-search-bar input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.ght-glossary-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.ght-filter {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Table */
+.ght-glossary-table-wrapper {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.ght-glossary-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.ght-glossary-table thead {
+    background: #f5f5f5;
+    border-bottom: 2px solid #ddd;
+}
+
+.ght-glossary-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+}
+
+.ght-glossary-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.ght-glossary-table tbody tr:hover {
+    background: #f9f9f9;
+}
+
+.ght-glossary-table .col-thai {
+    width: 30%;
+    font-weight: 500;
+}
+
+.ght-glossary-table .col-english {
+    width: 30%;
+}
+
+.ght-glossary-table .col-category {
+    width: 20%;
+}
+
+.ght-glossary-table .col-actions {
+    width: 20%;
+    text-align: right;
+}
+
+/* Category Badges */
+.ght-category-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.ght-cat-person {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.ght-cat-position {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.ght-cat-unit {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.ght-cat-other {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+/* Pagination */
+.ght-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 0;
+}
+
+.ght-page-info {
+    padding: 0 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Modal */
+.ght-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ght-modal-content {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.ght-modal-small {
+    max-width: 400px;
+}
+
+.ght-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.ght-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.ght-modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.ght-modal-close:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.ght-modal-body {
+    padding: 20px;
+}
+
+.ght-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* Form */
+.ght-form-group {
+    margin-bottom: 20px;
+}
+
+.ght-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+.ght-form-group .required {
+    color: #d32f2f;
+}
+
+.ght-form-group input,
+.ght-form-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.ght-form-group input:focus,
+.ght-form-group select:focus {
+    outline: none;
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* Loading State */
+.ght-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Empty State */
+.ght-no-terms td {
+    color: #999;
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ght-glossary-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ght-search-bar {
+        min-width: 100%;
+    }
+
+    .ght-glossary-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ght-glossary-table .col-actions {
+        text-align: left;
+    }
+
+    .ght-pagination {
+        flex-wrap: wrap;
+    }
+}

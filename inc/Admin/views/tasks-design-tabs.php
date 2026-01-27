@@ -1,0 +1,488 @@
+<?php
+/**
+ * Tasks Design Tabs View
+ * 
+ * แสดงรายการ Tab Groups ที่ยังแปลไม่ครบ
+ * ให้ผู้ใช้แปล Tab titles แต่ละอัน
+ * 
+ * @package GovHybridTranslator
+ * @since 2.1.1
+ */
+
+use GovHybridTranslator\Core\Languages;
+
+// ดึง DesignTabs integration
+$dt_integration = new \GovHybridTranslator\Integrations\DesignTabsIntegration();
+$all_tab_groups = $dt_integration->get_all_tab_groups();
+$untranslated_groups = $dt_integration->get_untranslated_groups();
+
+// ดึง target languages สำหรับ dropdown
+$settings_obj = isset($settings_obj) ? $settings_obj : new \GovHybridTranslator\Modules\Settings();
+$target_languages = $settings_obj->get_setting('target_languages', ['en']);
+
+// สร้าง array ข้อมูลภาษาสำหรับ dropdown
+$language_options = [];
+foreach ($target_languages as $lang_code) {
+    $lang_info = Languages::get_language($lang_code);
+    if ($lang_info) {
+        $language_options[$lang_code] = [
+            'code' => $lang_code,
+            'name' => $lang_info['name'],
+            'native' => $lang_info['native'] ?? $lang_info['name'],
+            'flag' => $lang_info['flag'] ?? ''
+        ];
+    }
+}
+?>
+
+<!-- Tab: Design Tabs -->
+<div id="tab-tasks-content-design-tabs" class="tab-tasks-content hidden">
+    
+    <?php if (empty($all_tab_groups)) : ?>
+        <!-- ไม่พบ Tab Groups -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+            <div class="text-gray-400 mb-4">
+                <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-700 mb-2">ไม่พบ Tab Groups</h3>
+            <p class="text-gray-500">ยังไม่มี Design Tabs Tab Groups บนเว็บไซต์</p>
+        </div>
+    <?php else : ?>
+    
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800">📐 Design Tabs Translation</h3>
+                <p class="text-sm text-gray-500">แปล Tab titles สำหรับ Design Tabs plugin</p>
+            </div>
+            <div class="text-sm text-gray-500">
+                <span class="font-semibold"><?php echo count($all_tab_groups); ?></span> Tab Groups
+                | <span class="text-orange-600 font-semibold"><?php echo count($untranslated_groups); ?></span> ยังแปลไม่ครบ
+            </div>
+        </div>
+        
+        <!-- Tab Groups List -->
+        <div class="space-y-4">
+            <?php foreach ($all_tab_groups as $item) : 
+                $group = $item['group'];
+                $tabs = $item['tabs'];
+                $translated_langs = $item['translated_langs'];
+                $translations = $item['translations'];
+                $missing_langs = $item['missing_langs'];
+            ?>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" 
+                     id="dt-group-card-<?php echo $group->ID; ?>">
+                    
+                    <!-- Group Header -->
+                    <div class="p-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50 cursor-pointer"
+                         onclick="toggleDesignTabGroup(<?php echo $group->ID; ?>)">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">📐</span>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">
+                                        <?php echo esc_html($group->post_title); ?>
+                                    </h4>
+                                    <p class="text-sm text-gray-500">
+                                        <?php echo count($tabs); ?> tabs
+                                        | Shortcode: <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">[design_tabs id="<?php echo $group->ID; ?>"]</code>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <!-- Translation Status -->
+                                <div class="flex items-center gap-1">
+                                    <?php foreach ($target_languages as $lang) : ?>
+                                        <?php if (in_array($lang, $translated_langs)) : ?>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                <?php echo esc_html($language_options[$lang]['flag'] ?? ''); ?> 
+                                                <?php echo strtoupper(esc_html($lang)); ?> ✓
+                                            </span>
+                                        <?php else : ?>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
+                                                <?php echo esc_html($language_options[$lang]['flag'] ?? ''); ?> 
+                                                <?php echo strtoupper(esc_html($lang)); ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </div>
+                                <span class="text-gray-400 transition-transform dt-group-toggle-<?php echo $group->ID; ?>">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Group Content (Hidden by default) -->
+                    <div class="hidden" id="dt-group-content-<?php echo $group->ID; ?>">
+                        <div class="p-4">
+                            
+                            <!-- Language Selector -->
+                            <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
+                                <label class="text-sm font-medium text-gray-700">เลือกภาษา:</label>
+                                <select id="dt-lang-select-<?php echo $group->ID; ?>" 
+                                        class="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gov-500 focus:border-transparent"
+                                        onchange="loadDesignTabTranslations(<?php echo $group->ID; ?>)">
+                                    <?php foreach ($target_languages as $lang) : ?>
+                                        <option value="<?php echo esc_attr($lang); ?>"
+                                            <?php echo in_array($lang, $missing_langs) ? 'class="text-orange-600"' : ''; ?>>
+                                            <?php echo esc_html(($language_options[$lang]['flag'] ?? '') . ' ' . ($language_options[$lang]['name'] ?? strtoupper($lang))); ?>
+                                            <?php echo in_array($lang, $translated_langs) ? '✓' : '← ยังไม่แปล'; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+
+                            <!-- Tabs Translation Form -->
+                            <div class="space-y-3" id="dt-tabs-form-<?php echo $group->ID; ?>">
+                                <?php foreach ($tabs as $index => $tab) : ?>
+                                    <div class="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
+                                        <!-- Tab Index -->
+                                        <div class="flex-shrink-0 w-8 h-8 bg-gov-100 text-gov-600 rounded-full flex items-center justify-center font-semibold text-sm">
+                                            <?php echo $index + 1; ?>
+                                        </div>
+                                        
+                                        <!-- Tab Inputs Container -->
+                                        <div class="flex-1 space-y-3">
+                                            <!-- Title Section -->
+                                            <div class="flex gap-4">
+                                                <!-- Original Title -->
+                                                <div class="flex-1">
+                                                    <label class="block text-xs text-gray-500 mb-1">หัวข้อ (ต้นฉบับ)</label>
+                                                    <div class="text-sm font-medium text-gray-800 p-2 bg-white rounded border border-gray-200">
+                                                        <?php if (!empty($tab['icon'])) : ?>
+                                                            <span class="dashicons dashicons-<?php echo esc_attr($tab['icon']); ?>" style="font-size: 14px; width: 14px; height: 14px; margin-right: 5px;"></span>
+                                                        <?php endif; ?>
+                                                        <?php echo esc_html($tab['title'] ?: 'Untitled Tab'); ?>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Translated Title Input -->
+                                                <div class="flex-1">
+                                                    <label class="block text-xs text-gray-500 mb-1">แปลหัวข้อ</label>
+                                                    <input type="text" 
+                                                        class="dt-tab-title-input w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gov-500 focus:border-transparent text-sm"
+                                                        data-group-id="<?php echo $group->ID; ?>"
+                                                        data-tab-index="<?php echo $index; ?>"
+                                                        value="<?php 
+                                                            $first_lang = $target_languages[0] ?? 'en';
+                                                            $trans = $translations[$first_lang][$index] ?? '';
+                                                            echo esc_attr(is_array($trans) ? ($trans['title'] ?? '') : $trans); 
+                                                        ?>"
+                                                        placeholder="แปลหัวข้อ: <?php echo esc_attr($tab['title']); ?>">
+                                                </div>
+                                            </div>
+
+                                            <!-- Content Section (If exists) -->
+                                            <?php if (isset($tab['content'])) : ?>
+                                                <div class="flex gap-4">
+                                                    <!-- Original Content -->
+                                                    <div class="flex-1">
+                                                        <label class="block text-xs text-gray-500 mb-1">เนื้อหา (ต้นฉบับ)</label>
+                                                        <div class="text-xs text-gray-600 p-2 bg-white rounded border border-gray-200 font-mono max-h-32 overflow-y-auto whitespace-pre-wrap">
+                                                            <?php echo esc_html($tab['content']); ?>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <!-- Translated Content Area -->
+                                                    <div class="flex-1">
+                                                        <label class="block text-xs text-gray-500 mb-1">แปลเนื้อหา (HTML/Shortcodes allowed)</label>
+                                                        <textarea class="dt-tab-content-input w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gov-500 focus:border-transparent text-sm font-mono"
+                                                                rows="4"
+                                                                data-group-id="<?php echo $group->ID; ?>"
+                                                                data-tab-index="<?php echo $index; ?>"
+                                                                placeholder="แปลเนื้อหา..."><?php 
+                                                                    $first_lang = $target_languages[0] ?? 'en';
+                                                                    $trans = $translations[$first_lang][$index] ?? '';
+                                                                    echo esc_textarea(is_array($trans) ? ($trans['content'] ?? '') : ''); 
+                                                                ?></textarea>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                                <button type="button"
+                                        onclick="autoTranslateDesignTabs(<?php echo $group->ID; ?>)"
+                                        class="text-gov-600 hover:text-gov-700 text-sm font-medium flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                    Auto-Translate (AI)
+                                </button>
+                                
+                                <button type="button"
+                                        onclick="saveDesignTabTranslations(<?php echo $group->ID; ?>)"
+                                        class="bg-gov-600 hover:bg-gov-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    บันทึกคำแปล
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        
+    <?php endif; ?>
+</div>
+
+<script>
+/**
+ * Toggle Design Tab Group content
+ */
+function toggleDesignTabGroup(groupId) {
+    const content = document.getElementById('dt-group-content-' + groupId);
+    const toggle = document.querySelector('.dt-group-toggle-' + groupId);
+    
+    if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        toggle.style.transform = 'rotate(180deg)';
+    } else {
+        content.classList.add('hidden');
+        toggle.style.transform = 'rotate(0)';
+    }
+}
+
+/**
+ * Load translations for selected language
+ */
+function loadDesignTabTranslations(groupId) {
+    const langSelect = document.getElementById('dt-lang-select-' + groupId);
+    const targetLang = langSelect.value;
+    
+    // Fetch translations for this language
+    const formData = new FormData();
+    formData.append('action', 'ght_get_design_tab_translations');
+    formData.append('nonce', '<?php echo wp_create_nonce('ght_design_tabs'); ?>');
+    formData.append('group_id', groupId);
+    formData.append('lang', targetLang);
+    
+    fetch(ajaxurl, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.data.translations) {
+            const translations = data.data.translations;
+            
+
+            // Update Title inputs
+            const titleInputs = document.querySelectorAll(`.dt-tab-title-input[data-group-id="${groupId}"]`);
+            titleInputs.forEach((input, index) => {
+                const trans = translations[index] || '';
+                input.value = (typeof trans === 'object') ? (trans.title || '') : trans;
+            });
+
+            // Update Content areas
+            const contentInputs = document.querySelectorAll(`.dt-tab-content-input[data-group-id="${groupId}"]`);
+            contentInputs.forEach((input, index) => {
+                const trans = translations[index] || '';
+                input.value = (typeof trans === 'object') ? (trans.content || '') : '';
+            });
+        }
+    });
+}
+
+/**
+ * Save Design Tab translations
+ */
+function saveDesignTabTranslations(groupId) {
+    const langSelect = document.getElementById('dt-lang-select-' + groupId);
+    const targetLang = langSelect.value;
+    const saveBtn = event.target.closest('button');
+    const originalBtnHtml = saveBtn.innerHTML;
+    
+    // Show saving state
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="4" class="opacity-25"></circle><path stroke-width="4" d="M4 12a8 8 0 018-8" class="opacity-75"></path></svg> กำลังบันทึก...';
+    // Collect translations
+    const translations = {};
+    
+
+    const titleInputs = document.querySelectorAll(`.dt-tab-title-input[data-group-id="${groupId}"]`);
+    titleInputs.forEach((titleInput, index) => {
+        const contentInput = document.querySelector(`.dt-tab-content-input[data-group-id="${groupId}"][data-tab-index="${index}"]`);
+        translations[index] = {
+            title: titleInput.value,
+            content: contentInput ? contentInput.value : ''
+        };
+    });
+    
+    // Save via AJAX
+    const formData = new FormData();
+    formData.append('action', 'ght_save_design_tab_translations');
+    formData.append('nonce', '<?php echo wp_create_nonce('ght_design_tabs'); ?>');
+    formData.append('group_id', groupId);
+    formData.append('lang', targetLang);
+    formData.append('translations', JSON.stringify(translations));
+    
+    fetch(ajaxurl, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        saveBtn.disabled = false;
+        
+        if (data.success) {
+            // แสดง success state
+            saveBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> บันทึกสำเร็จ!';
+            saveBtn.classList.remove('bg-gov-600', 'hover:bg-gov-700');
+            saveBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+            
+            if (typeof showNotification === 'function') {
+                showNotification('บันทึกคำแปลสำเร็จ!', 'success');
+            }
+            
+            // อัปเดต status badge ใน header ของ card
+            const card = document.getElementById('dt-group-card-' + groupId);
+            if (card) {
+                // หา badge ของภาษาที่แปล
+                const badges = card.querySelectorAll('.flex.items-center.gap-1 span');
+                badges.forEach(badge => {
+                    const text = badge.textContent.trim();
+                    if (text.includes(targetLang.toUpperCase()) && !text.includes('✓')) {
+                        // เปลี่ยนจาก orange เป็น green
+                        badge.classList.remove('bg-orange-100', 'text-orange-800');
+                        badge.classList.add('bg-green-100', 'text-green-800');
+                        badge.textContent = badge.textContent.trim() + ' ✓';
+                    }
+                });
+                
+                // อัปเดต option ใน dropdown
+                const langOption = langSelect.querySelector(`option[value="${targetLang}"]`);
+                if (langOption && !langOption.textContent.includes('✓')) {
+                    langOption.textContent = langOption.textContent.replace('← ยังไม่แปล', '✓');
+                }
+            }
+            
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                saveBtn.innerHTML = originalBtnHtml;
+                saveBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                saveBtn.classList.add('bg-gov-600', 'hover:bg-gov-700');
+            }, 2000);
+        } else {
+            saveBtn.innerHTML = originalBtnHtml;
+            if (typeof showNotification === 'function') {
+                showNotification(data.data?.message || 'เกิดข้อผิดพลาด', 'error');
+            }
+        }
+    })
+    .catch(err => {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalBtnHtml;
+        if (typeof showNotification === 'function') {
+            showNotification('เกิดข้อผิดพลาด', 'error');
+        }
+    });
+}
+
+/**
+ * Auto-translate Design Tabs using AI
+ */
+function autoTranslateDesignTabs(groupId) {
+    const langSelect = document.getElementById('dt-lang-select-' + groupId);
+    const targetLang = langSelect.value;
+    
+    const titleInputs = document.querySelectorAll(`.dt-tab-title-input[data-group-id="${groupId}"]`);
+    const contentInputs = document.querySelectorAll(`.dt-tab-content-input[data-group-id="${groupId}"]`);
+    
+    // Collect original items
+    const items = [];
+    
+
+    titleInputs.forEach((input, index) => {
+        const contentInput = document.querySelector(`.dt-tab-content-input[data-group-id="${groupId}"][data-tab-index="${index}"]`);
+        
+        // ดึงข้อความจาก placeholder และ div
+        const titlePlaceholder = input.placeholder;
+        const originalTitle = titlePlaceholder.replace('แปลหัวข้อ: ', '');
+        
+        let originalContent = '';
+        if (contentInput) {
+            // ดึงจาก div ต้นฉบับที่อยู่ข้างๆ
+            const originalContentDiv = contentInput.parentElement.parentElement.querySelector('.bg-white.rounded.border.font-mono');
+            if (originalContentDiv) {
+                originalContent = originalContentDiv.innerText;
+            }
+        }
+
+        items.push({
+            type: 'tab',
+            title: originalTitle,
+            content: originalContent
+        });
+    });
+    
+    // Show loading
+    titleInputs.forEach(input => {
+        input.disabled = true;
+        input.value = 'กำลังแปล...';
+    });
+    contentInputs.forEach(input => {
+        input.disabled = true;
+        input.value = 'กำลังแปล...';
+    });
+    
+    // Call AI translate
+    const formData = new FormData();
+    formData.append('action', 'ght_auto_translate_design_tabs');
+    formData.append('nonce', '<?php echo wp_create_nonce('ght_design_tabs'); ?>');
+    formData.append('group_id', groupId);
+    formData.append('lang', targetLang);
+    formData.append('items', JSON.stringify(items));
+    
+    fetch(ajaxurl, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        titleInputs.forEach(input => input.disabled = false);
+        contentInputs.forEach(input => input.disabled = false);
+        
+        if (data.success && data.data.translations) {
+            let tabIndex = 0;
+            data.data.translations.forEach((trans, index) => {
+                if (trans.type !== 'group_title') {
+                    if (titleInputs[tabIndex]) {
+                        titleInputs[tabIndex].value = (typeof trans === 'object') ? (trans.title || '') : trans;
+                    }
+                    if (contentInputs[tabIndex]) {
+                        contentInputs[tabIndex].value = (typeof trans === 'object') ? (trans.content || '') : '';
+                    }
+                    tabIndex++;
+                }
+            });
+            if (typeof showNotification === 'function') {
+                showNotification('แปลอัตโนมัติสำเร็จ! กดบันทึกเพื่อยืนยัน', 'success');
+            }
+        } else {
+            if (typeof showNotification === 'function') {
+                showNotification(data.data?.message || 'เกิดข้อผิดพลาด', 'error');
+            }
+        }
+    })
+    .catch(err => {
+        inputs.forEach(input => input.disabled = false);
+        if (typeof showNotification === 'function') {
+            showNotification('เกิดข้อผิดพลาดในการแปล', 'error');
+        }
+    });
+}
+</script>

@@ -1,0 +1,49 @@
+/**
+ * Dashboard View Styles
+ * Extracted from dashboard-view.php
+ */
+
+/* Font Family */
+body {
+    font-family: 'Sarabun', sans-serif;
+}
+
+/* Tab Styles */
+.tab-active {
+    border-color: #0284c7;
+    color: #0284c7;
+}
+
+.tab-inactive {
+    border-color: transparent;
+    color: #6b7280;
+}
+
+.tab-inactive:hover {
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+/* WordPress Content Area Adjustments */
+#wpcontent {
+    padding-left: 0 !important;
+}
+
+.auto-fold #wpcontent {
+    padding-left: 0 !important;
+}
+
+/* Sidebar Item Styles */
+.sidebar-item {
+    transition: all 0.2s;
+}
+
+.sidebar-item:hover {
+    background-color: #f9fafb;
+}
+
+.sidebar-item.active {
+    background-color: #f0f9ff;
+    color: #0284c7;
+    font-weight: 600;
+}

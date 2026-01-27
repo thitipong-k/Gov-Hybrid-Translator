@@ -1,0 +1,135 @@
+/**
+ * Admin Dashboard Styles
+ * Core styles for dashboard layout and navigation
+ * Consolidated from dashboard-view.css and settings-view.css
+ */
+
+/* Font Family */
+body {
+    font-family: 'Sarabun', sans-serif;
+}
+
+/* Tab Styles */
+.tab-active {
+    border-color: #0284c7;
+    color: #0284c7;
+}
+
+.tab-inactive {
+    border-color: transparent;
+    color: #6b7280;
+}
+
+.tab-inactive:hover {
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+/* WordPress Admin Adjustments */
+#wpcontent {
+    padding-left: 0 !important;
+}
+
+.auto-fold #wpcontent {
+    padding-left: 0 !important;
+}
+
+/* Sidebar Styles */
+.sidebar-item {
+    transition: all 0.2s;
+}
+
+.sidebar-item:hover {
+    background-color: #f9fafb;
+}
+
+.sidebar-item.active {
+    background-color: #f0f9ff;
+    color: #0284c7;
+    font-weight: 600;
+}
+
+/* View Sections */
+.view-section {
+    display: block;
+}
+
+.view-section.hidden {
+    display: none;
+}
+
+/* Tab Content */
+.tab-tasks-content,
+.tab-translated-content {
+    display: block;
+}
+
+.tab-tasks-content.hidden,
+.tab-translated-content.hidden {
+    display: none;
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    color: white;
+    z-index: 9999;
+    transition: opacity 0.3s;
+}
+
+.notification.success {
+    background-color: #10b981;
+}
+
+.notification.error {
+    background-color: #ef4444;
+}
+
+/* Loading States */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Smooth Transitions */
+* {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* Settings Tab Styles */
+.settings-tab-active {
+    border-color: #0284c7;
+    color: #0284c7;
+}
+
+.settings-tab-inactive {
+    border-color: transparent;
+    color: #6b7280;
+}
+
+.settings-tab-inactive:hover {
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+/* Settings Save Button */
+.settings-save-btn {
+    background-color: #0284c7;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.settings-save-btn:hover {
+    background-color: #0369a1;
+}

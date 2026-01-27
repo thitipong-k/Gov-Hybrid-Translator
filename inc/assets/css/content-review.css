@@ -1,0 +1,277 @@
+/* Content Review Modal Styles */
+
+.ght-modal-xl {
+    width: 95%;
+    max-width: 1200px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.ght-review-body {
+    flex: 1;
+    overflow: hidden;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.ght-review-layout {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Left Column: Content */
+.ght-review-content-col {
+    flex: 2;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    background: #f9f9f9;
+}
+
+.ght-review-instructions {
+    padding: 10px 20px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    color: #666;
+    font-size: 13px;
+}
+
+.ght-content-display {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+    background: #fff;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.ght-content-display p {
+    margin-bottom: 1.5em;
+}
+
+.ght-content-display h1,
+.ght-content-display h2,
+.ght-content-display h3 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+}
+
+/* Selection Highlight */
+::selection {
+    background: #fef08a;
+    /* Bright yellow */
+    color: #000;
+}
+
+/* Highlight for Custom Terms (newly added) - Yellow/Orange */
+.ght-highlight-term {
+    background: linear-gradient(180deg, transparent 60%, #fbbf24 60%);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.ght-highlight-term:hover {
+    background: #fbbf24;
+    color: #000;
+}
+
+/* Highlight for Existing Glossary Terms - Green + Underline */
+.ght-highlight-existing {
+    background: linear-gradient(180deg, transparent 60%, #34d399 60%);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 500;
+    cursor: help;
+    transition: all 0.2s ease;
+    /* เพิ่มเส้นใต้ให้เห็นชัด */
+    text-decoration: underline;
+    text-decoration-color: #059669;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+
+.ght-highlight-existing:hover {
+    background: #34d399;
+    color: #000;
+}
+
+/* Animation for newly highlighted terms */
+@keyframes highlightPulse {
+    0% {
+        background-color: rgba(251, 191, 36, 0.3);
+    }
+
+    50% {
+        background-color: rgba(251, 191, 36, 0.8);
+    }
+
+    100% {
+        background-color: rgba(251, 191, 36, 0.3);
+    }
+}
+
+.ght-highlight-new {
+    animation: highlightPulse 1s ease-in-out;
+}
+
+/* Legend in instructions */
+.ght-highlight-legend {
+    display: flex;
+    gap: 15px;
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.ght-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.ght-legend-existing {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(180deg, transparent 60%, #34d399 60%);
+    border-radius: 3px;
+}
+
+/* Right Column: Sidebar */
+.ght-review-sidebar-col {
+    flex: 1;
+    min-width: 350px;
+    max-width: 400px;
+    background: #f0f0f1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.ght-review-form-card,
+.ght-review-terms-list-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.ght-review-form-card h3,
+.ght-review-terms-list-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #555;
+}
+
+.ght-terms-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.ght-term-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.ght-term-item:last-child {
+    border-bottom: none;
+}
+
+.ght-term-info {
+    flex: 1;
+}
+
+.ght-term-thai {
+    font-weight: 500;
+    color: #2271b1;
+    display: block;
+}
+
+.ght-term-eng {
+    color: #666;
+    font-size: 12px;
+}
+
+.ght-term-cat {
+    font-size: 10px;
+    padding: 2px 6px;
+    background: #eee;
+    border-radius: 4px;
+    margin-left: 5px;
+    color: #777;
+}
+
+.ght-term-delete {
+    color: #d63638;
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0.6;
+}
+
+.ght-term-delete:hover {
+    opacity: 1;
+    background: #fbeaea;
+    border-radius: 3px;
+}
+
+.ght-no-terms-msg {
+    text-align: center;
+    color: #999;
+    padding: 20px 0;
+    font-style: italic;
+}
+
+.button-block {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .ght-review-layout {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .ght-review-content-col {
+        height: 50vh;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .ght-review-sidebar-col {
+        max-width: none;
+        height: auto;
+    }
+}
+
+/* Existing Terms Styles */
+.existing-term {
+    background-color: #f0fdf4;
+    border-left: 3px solid #10b981;
+}
+
+.existing-term .ght-term-info {
+    padding-left: 5px;
+}

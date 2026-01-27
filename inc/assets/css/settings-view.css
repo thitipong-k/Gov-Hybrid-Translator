@@ -1,0 +1,35 @@
+/**
+ * Settings View Styles
+ * Extracted from settings-view.php
+ */
+
+/* Settings Tab Styles */
+.settings-tab-active {
+    border-color: #0284c7;
+    color: #0284c7;
+}
+
+.settings-tab-inactive {
+    border-color: transparent;
+    color: #6b7280;
+}
+
+.settings-tab-inactive:hover {
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+/* Settings Save Button */
+.settings-save-btn {
+    background-color: #0284c7;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.settings-save-btn:hover {
+    background-color: #0369a1;
+}

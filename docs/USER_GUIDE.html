@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gov Hybrid Translator - คู่มือการใช้งาน</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+        h1 { color: #0369a1; border-bottom: 3px solid #0ea5e9; padding-bottom: 15px; }
+        h2 { color: #0284c7; margin-top: 40px; border-left: 4px solid #0ea5e9; padding-left: 15px; }
+        h3 { color: #0369a1; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; }
+        th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+        th { background: #0ea5e9; color: white; }
+        tr:nth-child(even) { background: #f1f5f9; }
+        code { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 20px; border-radius: 8px; overflow-x: auto; }
+        .toc { background: white; padding: 20px 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .toc a { color: #0369a1; text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        .section { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .tip { background: #ecfdf5; border-left: 4px solid #10b981; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .warning { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        hr { border: none; border-top: 2px solid #e2e8f0; margin: 40px 0; }
+        .footer { text-align: center; color: #64748b; margin-top: 50px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+
+<h1>🌐 Gov Hybrid Translator - คู่มือการใช้งาน</h1>
+
+<div class="toc">
+    <h3>📋 สารบัญ</h3>
+    <ol>
+        <li><a href="#overview">ภาพรวมระบบ</a></li>
+        <li><a href="#setup">การตั้งค่าเริ่มต้น</a></li>
+        <li><a href="#translate">การแปลเนื้อหา</a></li>
+        <li><a href="#glossary">การจัดการคำศัพท์</a></li>
+        <li><a href="#display">การแสดงผลหน้าเว็บ</a></li>
+        <li><a href="#faq">คำถามที่พบบ่อย</a></li>
+    </ol>
+</div>
+
+<div class="section" id="overview">
+    <h2>📌 ภาพรวมระบบ</h2>
+    <p><strong>Gov Hybrid Translator</strong> เป็นปลั๊กอิน WordPress สำหรับแปลเนื้อหาเว็บไซต์ราชการ</p>
+    
+    <h3>ประเภทเนื้อหาที่รองรับ</h3>
+    <table>
+        <tr><th>ประเภท</th><th>รองรับ</th></tr>
+        <tr><td>Pages (หน้าเพจ)</td><td>✅</td></tr>
+        <tr><td>Posts (บทความ)</td><td>✅</td></tr>
+        <tr><td>Categories/Tags</td><td>✅</td></tr>
+        <tr><td>Navigation Menus</td><td>✅</td></tr>
+        <tr><td>Site Title/Tagline</td><td>✅</td></tr>
+    </table>
+
+    <h3>คุณสมบัติหลัก</h3>
+    <ul>
+        <li>🤖 <strong>AI Translation</strong> - รองรับ Google, OpenAI, DeepL, Azure, Claude</li>
+        <li>📝 <strong>Manual Translation</strong> - แปลด้วยตนเองได้</li>
+        <li>📚 <strong>Glossary</strong> - กำหนดคำศัพท์เฉพาะราชการ</li>
+        <li>🔄 <strong>Language Switcher</strong> - สลับภาษาแบบ Path-based URL</li>
+        <li>📊 <strong>Dashboard</strong> - จัดการแปลในที่เดียว</li>
+        <li>🔒 <strong>Role-based Permissions</strong> - กำหนดสิทธิ์ตามบทบาท</li>
+    </ul>
+</div>
+
+<div class="section" id="setup">
+    <h2>⚙️ การตั้งค่าเริ่มต้น</h2>
+    
+    <h3>1. เข้าสู่ระบบ</h3>
+    <ol>
+        <li>เข้า WordPress Admin</li>
+        <li>คลิก <strong>Gov Translator</strong> ในเมนูด้านซ้าย</li>
+        <li>จะเห็นหน้า Dashboard พร้อมสถิติ</li>
+    </ol>
+
+    <h3>2. ตั้งค่า AI Translation</h3>
+    <p>ไปที่ <strong>Settings &gt; AI &amp; Translation</strong></p>
+    
+    <table>
+        <tr><th>Provider</th><th>ข้อดี</th></tr>
+        <tr><td>Google Cloud</td><td>แม่นยำ, รวดเร็ว</td></tr>
+        <tr><td>OpenAI GPT</td><td>เข้าใจบริบท</td></tr>
+        <tr><td>DeepL</td><td>ภาษายุโรปดี</td></tr>
+        <tr><td>Azure Translator</td><td>Enterprise-grade</td></tr>
+        <tr><td>Claude AI</td><td>เข้าใจบริบทดี</td></tr>
+    </table>
+
+    <h3>3. ตั้งค่า Site Identity</h3>
+    <ol>
+        <li>ไปที่ <strong>Settings &gt; General</strong></li>
+        <li>กรอกชื่อเว็บภาษาอังกฤษ</li>
+        <li>กรอก Tagline ภาษาอังกฤษ</li>
+        <li>คลิก <strong>Save</strong></li>
+    </ol>
+
+    <h3>4. ตั้งค่า Language Switcher</h3>
+    <ol>
+        <li>ไปที่ <strong>Settings &gt; Language Switcher</strong></li>
+        <li>เลือกรูปแบบ: Floating Button / Menu / Shortcode</li>
+        <li>คลิก <strong>Save Settings</strong></li>
+    </ol>
+</div>
+
+<div class="section" id="translate">
+    <h2>📝 การแปลเนื้อหา</h2>
+    
+    <div class="tip">
+        <strong>💡 โหมดการทำงาน:</strong> Plugin ใช้ระบบ Meta-based Translation (ไม่สร้าง post ซ้ำ)
+    </div>
+
+    <h3>การแปล Pages/Posts</h3>
+    <ol>
+        <li>ไปที่ <strong>Translation Tasks &gt; Pages</strong> หรือ <strong>Posts</strong></li>
+        <li>พิมพ์ชื่อภาษาอังกฤษ</li>
+        <li>คลิก <strong>Save</strong></li>
+        <li>✅ รายการย้ายไป <strong>Translated</strong></li>
+    </ol>
+
+    <h3>การแปล Categories</h3>
+    <ol>
+        <li>ไปที่ <strong>Translation Tasks &gt; Categories</strong></li>
+        <li>พิมพ์ชื่อภาษาอังกฤษ</li>
+        <li>คลิก <strong>Save</strong></li>
+    </ol>
+
+    <h3>การแปล Menus</h3>
+    <ol>
+        <li>ไปที่ <strong>Translation Tasks &gt; Menus</strong></li>
+        <li>พิมพ์ชื่อภาษาอังกฤษของแต่ละรายการ</li>
+        <li>คลิก <strong>Save</strong></li>
+    </ol>
+
+    <h3>ตัวอย่างการแปล</h3>
+    <table>
+        <tr><th>ภาษาไทย</th><th>ภาษาอังกฤษ</th></tr>
+        <tr><td>หน้าแรก</td><td>Home</td></tr>
+        <tr><td>เกี่ยวกับเรา</td><td>About Us</td></tr>
+        <tr><td>ข่าวสาร</td><td>News</td></tr>
+        <tr><td>ติดต่อเรา</td><td>Contact Us</td></tr>
+    </table>
+</div>
+
+<div class="section" id="glossary">
+    <h2>📚 การจัดการคำศัพท์ (Glossary)</h2>
+    
+    <h3>เพิ่มคำศัพท์เฉพาะ</h3>
+    <ol>
+        <li>ไปที่ <strong>Glossary &gt; Add New</strong></li>
+        <li>กรอก Title: คำภาษาไทย</li>
+        <li>กรอก English Translation: คำภาษาอังกฤษ</li>
+        <li>คลิก <strong>Publish</strong></li>
+    </ol>
+
+    <h3>ประเภทคำศัพท์</h3>
+    <table>
+        <tr><th>ประเภท</th><th>ตัวอย่าง</th></tr>
+        <tr><td>ชื่อบุคคล</td><td>นายกรัฐมนตรี → Prime Minister</td></tr>
+        <tr><td>ตำแหน่ง</td><td>ผู้อำนวยการ → Director</td></tr>
+        <tr><td>หน่วยงาน</td><td>กระทรวงการคลัง → Ministry of Finance</td></tr>
+        <tr><td>ศัพท์เฉพาะ</td><td>พ.ร.บ. → Act</td></tr>
+    </table>
+</div>
+
+<div class="section" id="display">
+    <h2>🌍 การแสดงผลหน้าเว็บ</h2>
+    
+    <h3>URL Structure</h3>
+    <table>
+        <tr><th>ภาษา</th><th>URL Pattern</th></tr>
+        <tr><td>ไทย (default)</td><td><code>yoursite.com/page-name/</code></td></tr>
+        <tr><td>อังกฤษ</td><td><code>yoursite.com/en/page-name/</code></td></tr>
+    </table>
+
+    <h3>วิธีดูเนื้อหาภาษาอังกฤษ</h3>
+    <ol>
+        <li><strong>คลิก Language Switcher</strong> - ปุ่มธงชาติ</li>
+        <li><strong>พิมพ์ URL โดยตรง</strong> - <code>/en/page-name/</code></li>
+        <li><strong>Query String</strong> - <code>?lang=en</code></li>
+    </ol>
+</div>
+
+<div class="section" id="faq">
+    <h2>❓ คำถามที่พบบ่อย</h2>
+    
+    <h3>หน้า /en/ ไม่แสดงเนื้อหา?</h3>
+    <ol>
+        <li>ไปที่ <strong>Settings &gt; Permalinks</strong></li>
+        <li>คลิก <strong>Save Changes</strong> (flush rewrite rules)</li>
+        <li>Refresh หน้าเว็บ</li>
+    </ol>
+
+    <h3>ชื่อเว็บไม่แปลเป็นภาษาอังกฤษ?</h3>
+    <ol>
+        <li>ไปที่ <strong>Settings &gt; General</strong></li>
+        <li>กรอกชื่อเว็บภาษาอังกฤษ</li>
+        <li>คลิก <strong>Save</strong></li>
+    </ol>
+
+    <h3>AI แปลไม่ถูกต้อง?</h3>
+    <ol>
+        <li>เพิ่มคำใน <strong>Glossary</strong></li>
+        <li>แก้ไขด้วยตนเองใน <strong>Translation Tasks</strong></li>
+    </ol>
+
+    <div class="warning">
+        <strong>⚠️ เกิด "Critical Error"?</strong><br>
+        ตรวจสอบ <code>wp-content/debug.log</code> และติดต่อผู้ดูแลระบบ
+    </div>
+</div>
+
+<hr>
+
+<div class="footer">
+    <p><strong>Gov Hybrid Translator</strong> v2.0.0</p>
+    <p>อัพเดทล่าสุด: 2025-12-15</p>
+</div>
+
+</body>
+</html>

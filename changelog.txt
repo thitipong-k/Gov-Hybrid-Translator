@@ -1,0 +1,50 @@
+= 2.1.0 =
+* [FIXED] View Logs and Clear Logs buttons not responding in Advanced Settings.
+* [FIXED] Dashboard statistics showing mock data instead of real data.
+* [FIXED] Language switcher TH button not working on English pages (Avada.php JS was changing all homepage links).
+* [IMPROVED] Dashboard now displays real statistics from database:
+  - Total Translations: Counts from TranslationStatus
+  - Glossary Terms: Counts from ght_glossary CPT
+  - AI Credits Used: Tracks Translation Memory usage
+  - TM Hit Rate: Translation Memory hit rate percentage
+  - Language Distribution: Counts translations per language
+  - Monthly Trends: Tracks translations by month
+  - Top Categories: Shows categories with most translated posts
+  - Recent Translations: Shows actual translation status and language count
+* [IMPROVED] View Logs modal with dark theme terminal-like display.
+* [IMPROVED] Clear Logs functionality with confirmation dialog.
+
+= 2.0.0 =
+* Major refactoring to Meta-based translation architecture.
+* Added Translation Memory module for caching translations.
+* Added Batch Translation module for bulk translation.
+* Added multi-language support (EN, ZH, JA, KO, VI, MY).
+* Added path-based URL routing (/en/, /zh/, etc.).
+* Added floating language switcher button.
+* Added AJAX handlers for Settings management.
+* Added API Key encryption for security.
+* Added custom capabilities for role-based access control.
+* Added 404 page translation support.
+* Improved admin UI with modern design.
+
+= 1.2.0 =
+* Fixed language switcher button visibility with fixed/sticky theme headers.
+* Increased z-index to 999999 for floating button to ensure it appears above fixed headers.
+* Added Top Offset setting (0-300px) to adjust button position for themes with fixed headers.
+* Improved CSS transitions for smoother hover effects.
+
+= 1.1.1 =
+* Added configurable Language Switcher with settings page.
+* Added support for Floating, Menu, and Shortcode display modes.
+* Added Dual Buttons layout (TH | EN side-by-side).
+* Added Button Content options (Flag Only, Text Only, Both).
+* Added customizable floating positions (Top-Right, Center-Right, Bottom-Right).
+* Fixed PHP warning in Router.php for page_link filter.
+* Improved flag icon styling with smaller size (30px).
+
+= 1.1.0 =
+* Initial Release for testing.
+* Added Glossary Custom Post Type.
+* Added Hybrid Translation Workflow (Cloning + Glossary Replacement).
+* Added Frontend Routing for /en/ URLs.
+* Added Admin Meta Box for translation management.
