@@ -742,12 +742,20 @@ class Router {
      */
     public static function remove_language_prefix($url) {
         $langs = implode('|', self::SUPPORTED_LANGUAGES);
-        // ลบ /en/ หรือ /en (ท้าย URL) หรือ /en?
-        // กรณี /en/ → /
-        // กรณี /en$ → '' (root)
-        $url = preg_replace('#/(' . $langs . ')/#', '/', $url);
-        // กรณี URL จบด้วย /en (ไม่มี trailing slash)
-        $url = preg_replace('#/(' . $langs . ')(\?|$)#', '$2', $url);
+        
+        // Loop จนกว่าจะไม่เจอ prefix (ป้องกัน double prefix /en/en/)
+        do {
+            $original_url = $url;
+            
+            // ลบ /en/ หรือ /en (ท้าย URL) หรือ /en?
+            // กรณี /en/ → /
+            $url = preg_replace('#/(' . $langs . ')/#', '/', $url);
+            
+            // กรณี URL จบด้วย /en (ไม่มี trailing slash)
+            $url = preg_replace('#/(' . $langs . ')(\?|$)#', '$2', $url);
+            
+        } while ($original_url !== $url);
+        
         return $url;
     }
 

@@ -94,6 +94,11 @@ class LanguageSwitcher {
 		$home = trailingslashit( get_option('home') );
 		$lang_home = $home . $lang . '/';
 		
+		// ถ้า HTML มีลิงก์ภาษาอยู่แล้ว ไม่ต้องทำอะไร (ป้องกัน double /en/en/)
+		if ( strpos( $html, $lang_home ) !== false ) {
+			return $html;
+		}
+
 		// แทนที่ลิงก์ home ใน HTML ด้วย lang home
 		// Pattern: href="http://localhost/wordpress/" → href="http://localhost/wordpress/en/"
 		$html = str_replace( 'href="' . $home . '"', 'href="' . $lang_home . '"', $html );
