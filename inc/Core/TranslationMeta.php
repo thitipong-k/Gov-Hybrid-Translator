@@ -9,6 +9,7 @@
  * - _ght_title_{lang}: ชื่อแปล เช่น _ght_title_en
  * - _ght_content_{lang}: เนื้อหาแปล เช่น _ght_content_en
  * - _ght_excerpt_{lang}: คำอธิบายย่อ เช่น _ght_excerpt_en
+ * - _ght_status_{lang}: สถานะ (draft, published)
  * - _ght_translated_at_{lang}: วันที่แปล
  * 
  * @package GovHybridTranslator
@@ -34,30 +35,35 @@ class TranslationMeta {
      * @param string $title ชื่อแปล
      * @param string $content เนื้อหาแปล
      * @param string $excerpt คำอธิบายย่อ (optional)
+     * @param string $status สถานะ (draft, published) Default: published
      * @return bool สำเร็จหรือไม่
      */
-    public static function save($post_id, $lang, $title, $content, $excerpt = '') {
+    public static function save($post_id, $lang, $title, $content, $excerpt = '', $status = 'published') {
         if (empty($post_id) || empty($lang)) {
             return false;
         }
 
         $post_id = intval($post_id);
         $lang = sanitize_text_field($lang);
+        $status = in_array($status, ['draft', 'published']) ? $status : 'published';
 
         // ลบ meta เก่าก่อน แล้วค่อย add ใหม่ (แก้ปัญหา update_post_meta returns false)
         $title_key = self::PREFIX . 'title_' . $lang;
         $content_key = self::PREFIX . 'content_' . $lang;
         $excerpt_key = self::PREFIX . 'excerpt_' . $lang;
+        $status_key = self::PREFIX . 'status_' . $lang;
         $time_key = self::PREFIX . 'translated_at_' . $lang;
 
         // ลบ meta เก่า
         delete_post_meta($post_id, $title_key);
         delete_post_meta($post_id, $content_key);
+        delete_post_meta($post_id, $status_key); // ลบสถานะเก่า
         delete_post_meta($post_id, $time_key);
 
         // เพิ่ม meta ใหม่
         $title_result = add_post_meta($post_id, $title_key, $title, true);
         $content_result = add_post_meta($post_id, $content_key, $content, true);
+        add_post_meta($post_id, $status_key, $status, true); // บันทึกสถานะใหม่
         
         // บันทึก excerpt ถ้ามี
         if (!empty($excerpt)) {
@@ -91,6 +97,7 @@ class TranslationMeta {
             'title' => $title,
             'content' => get_post_meta($post_id, self::PREFIX . 'content_' . $lang, true),
             'excerpt' => get_post_meta($post_id, self::PREFIX . 'excerpt_' . $lang, true),
+            'status' => get_post_meta($post_id, self::PREFIX . 'status_' . $lang, true) ?: 'published', // Default to published for old data
             'translated_at' => get_post_meta($post_id, self::PREFIX . 'translated_at_' . $lang, true),
         ];
     }
@@ -183,6 +190,7 @@ class TranslationMeta {
         delete_post_meta($post_id, self::PREFIX . 'title_' . $lang);
         delete_post_meta($post_id, self::PREFIX . 'content_' . $lang);
         delete_post_meta($post_id, self::PREFIX . 'excerpt_' . $lang);
+        delete_post_meta($post_id, self::PREFIX . 'status_' . $lang);
         delete_post_meta($post_id, self::PREFIX . 'translated_at_' . $lang);
         
         return true;

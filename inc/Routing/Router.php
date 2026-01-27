@@ -144,9 +144,11 @@ class Router {
             
             if (!empty($slug)) {
                 // Set language query var
+                // กำหนดภาษาให้กับ query var เพื่อให้ WordPress รู้ว่ากำลังดูหน้าภาษาอะไร
                 $query_vars[self::LANG_QUERY_VAR] = $lang;
                 
                 // หา post/page ที่มี slug ตรงกัน
+                // ใช้ SQL query เพื่อค้นหา Post ID จาก slug โดยไม่สนใจภาษา (เพราะเราเก็บแปลใน Meta)
                 global $wpdb;
                 $post = $wpdb->get_row($wpdb->prepare(
                     "SELECT ID, post_type FROM {$wpdb->posts} 
@@ -744,6 +746,8 @@ class Router {
         $langs = implode('|', self::SUPPORTED_LANGUAGES);
         
         // Loop จนกว่าจะไม่เจอ prefix (ป้องกัน double prefix /en/en/)
+        // แก้ไขปัญหา: บางครั้ง URL อาจมี prefix ซ้ำ เช่น /en/en/about เนื่องจากการทำงานซ้ำซ้อนของ filter
+        // การใช้ Loop จะช่วยให้มั่นใจว่า prefix ถูกลบออกทั้งหมดจนเหลือแค่ path จริง
         do {
             $original_url = $url;
             

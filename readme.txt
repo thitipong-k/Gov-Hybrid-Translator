@@ -3,7 +3,7 @@ Contributors: govtechteam
 Tags: translation, hybrid, glossary, government, multilingual, gutenberg, elementor, avada
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 2.3.0
+Stable tag: 2.4.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -36,6 +36,15 @@ Gov Hybrid Translator is designed to streamline the translation workflow for gov
 5.  (Optional) Enable Auto-Translate in Settings → Content & SEO.
 
 == Changelog ==
+
+= 2.4.0 =
+*   **NEW**: Advanced Translation Workflow - Draft & Publish Status for translations.
+*   **NEW**: Smart Glossary - Regex-based term replacement with Case Sensitivity support.
+*   **NEW**: Manual Edit Modal - Added "Status" selector (Draft/Published).
+*   **NEW**: Frontend Visibility Control - Draft translations are hidden from public users.
+*   **IMPROVED**: Glossary replacement now safely ignores HTML tags/attributes.
+*   **FIXED**: Double language prefix bug in logo and home links.
+*   **FIXED**: Quick Edit (Save Page Translation) logic to preserve existing status.
 
 = 2.3.0 =
 *   **NEW**: Delete Translation button in Review Content modal.

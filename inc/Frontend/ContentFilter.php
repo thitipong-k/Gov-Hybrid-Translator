@@ -205,6 +205,15 @@ class ContentFilter {
         // ดึง title แปลจาก meta
         $translated_title = TranslationMeta::get_title($post_id, $lang);
         
+        // === Check Status (Draft/Published) ===
+        // ตรวจสอบสถานะการแปล (Feature: Advanced Workflow)
+        // ถ้าเป็น Draft และไม่ใช่ Admin ให้แสดงภาษาเดิม (ป้องกัน User ทั่วไปเห็นเนื้อหาที่ยังไม่ approved)
+        // Admin จะยังเห็นได้เพื่อการตรวจสอบ (Preview)
+        $status = get_post_meta($post_id, '_ght_status_' . $lang, true) ?: 'published';
+        if ($status === 'draft' && !current_user_can('manage_options')) {
+            return $title;
+        }
+
         return !empty($translated_title) ? $translated_title : $title;
     }
 
@@ -257,6 +266,14 @@ class ContentFilter {
         // ดึง content แปลจาก meta
         $translated_content = TranslationMeta::get_content($post_id, $lang);
         
+        // === Check Status (Draft/Published) ===
+        // ตรวจสอบสถานะการแปล (Feature: Advanced Workflow)
+        // ถ้าเป็น Draft และไม่ใช่ Admin ให้แสดงภาษาเดิม (ป้องกัน User ทั่วไปเห็นเนื้อหาที่ยังไม่ approved)
+        $status = get_post_meta($post_id, '_ght_status_' . $lang, true) ?: 'published';
+        if ($status === 'draft' && !current_user_can('manage_options')) {
+            return $content;
+        }
+
         return !empty($translated_content) ? $translated_content : $content;
     }
 
@@ -292,6 +309,13 @@ class ContentFilter {
         // ดึง excerpt แปลจาก meta
         $translated_excerpt = TranslationMeta::get_excerpt($post_id, $lang);
         
+        // === Check Status (Draft/Published) ===
+        // ถ้าเป็น Draft และไม่ใช่ Admin ให้แสดงภาษาเดิม
+        $status = get_post_meta($post_id, '_ght_status_' . $lang, true) ?: 'published';
+        if ($status === 'draft' && !current_user_can('manage_options')) {
+            return $excerpt;
+        }
+
         return !empty($translated_excerpt) ? $translated_excerpt : $excerpt;
     }
 
@@ -325,6 +349,13 @@ class ContentFilter {
 
         // ดึง excerpt แปลจาก meta
         $translated_excerpt = TranslationMeta::get_excerpt($post->ID, $lang);
+        
+        // === Check Status (Draft/Published) ===
+        // ถ้าเป็น Draft และไม่ใช่ Admin ให้แสดงภาษาเดิม
+        $status = get_post_meta($post->ID, '_ght_status_' . $lang, true) ?: 'published';
+        if ($status === 'draft' && !current_user_can('manage_options')) {
+            return $excerpt;
+        }
         
         return !empty($translated_excerpt) ? $translated_excerpt : $excerpt;
     }

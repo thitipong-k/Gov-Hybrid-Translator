@@ -2,7 +2,26 @@
 
 การเปลี่ยนแปลงทั้งหมดของ Gov Hybrid Translator plugin
 
-## [2.3.0] - 2024-12-24
+## [2.4.0] - 2026-01-27
+
+### เพิ่มเติม (Added)
+
+- **Advanced Translation Workflow**: ระบบสถานะ Draft/Publish สำหรับการตรวจสอบก่อนเผยแพร่
+- **Smart Glossary**: ระบบคลังคำศัพท์อัจฉริยะ รองรับ Regex และ Case Insensitivity
+- **Manual Edit**: เพิ่มตัวเลือกสถานะ (Status) ในหน้าต่างแก้ไขงานแปล
+- **Visibility Control**: ซ่อนเนื้อหาฉบับร่าง (Draft) จากผู้ใช้งานทั่วไป (แสดงเฉพาะ Admin)
+
+### แก้ไข (Fixed)
+
+- ปัญหา Double Language Prefix ในลิงก์หน้าแรกและโลโก้ (`/n/en/`)
+- ปัญหาสถานะถูกรีเซ็ตเป็น Published เมื่อใช้ Quick Edit (Save Page Translation)
+
+### ปรับปรุง (Improved)
+
+- Glossary ยกเว้นการแทนที่คำใน HTML Tags/Attributes เพื่อความปลอดภัยของโครงสร้างเว็บ
+- เพิ่ม Thai comments อธิบายการทำงานในโค้ด (Router, TranslationAjax, Post, etc.)
+
+---
 
 ### เพิ่มเติม (Added)
 

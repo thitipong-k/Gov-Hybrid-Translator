@@ -42,9 +42,10 @@ class Post {
 	 * @param int $post_id Post ID ต้นฉบับ
 	 * @param string $target_lang รหัสภาษาเป้าหมาย (เช่น 'en', 'zh', 'ja')
 	 * @param string|null $custom_title ชื่อแปลที่กำหนดเอง (ถ้ามี)
+	 * @param string $status สถานะ (draft, published) Default: published
 	 * @return bool|WP_Error true ถ้าสำเร็จ หรือ error
 	 */
-	public function translate_to_meta( $post_id, $target_lang = 'en', $custom_title = null ) {
+	public function translate_to_meta( $post_id, $target_lang = 'en', $custom_title = null, $status = 'published' ) {
 		// ดึง Post ต้นฉบับ
 		$post = get_post( $post_id );
 		if ( ! $post ) {
@@ -101,7 +102,8 @@ class Post {
 			$target_lang,
 			$final_title,
 			$final_content,
-			$final_excerpt
+			$final_excerpt,
+			$status
 		);
 
 		return $result ? true : new \WP_Error( 'save_failed', 'ไม่สามารถบันทึกคำแปลได้' );
@@ -254,12 +256,18 @@ class Post {
 		];
 		$glossary_posts = get_posts( $args );
 
-		// วนลูปแทนที่คำทีละคำ
+		if ( empty( $glossary_posts ) ) {
+			return $content;
+		}
+
+		// เตรียมข้อมูลสำหรับ Regex
+		$replacements = [];
 		foreach ( $glossary_posts as $term ) {
-			$source_word = $term->post_title; // คำต้นฉบับ (ภาษาไทย)
+			$source_word = trim($term->post_title); // คำต้นฉบับ (ภาษาไทย)
 			
+			if ( empty($source_word) ) continue;
+
 			// === ค้นหาคำแปลตามภาษาเป้าหมาย ===
-			// สร้าง meta key: _gov_glossary_en_term, _gov_glossary_zh_term ฯลฯ
 			$meta_key = '_gov_glossary_' . $target_lang . '_term';
 			$target_word = get_post_meta( $term->ID, $meta_key, true );
 			
@@ -273,12 +281,41 @@ class Post {
 				$target_word = $term->post_content;
 			}
 
-			// แทนที่คำถ้ามีทั้งคู่
-			if ( ! empty( $source_word ) && ! empty( $target_word ) ) {
-				$content = str_replace( $source_word, $target_word, $content );
+			if ( ! empty( $target_word ) ) {
+				// สร้าง Regex Pattern
+				// 1. preg_quote: ป้องกันอักขระพิเศษในคำศัพท์
+				// 2. /u: รองรับ Unicode (ภาษาไทย)
+				// 3. /i: Case Insensitive (ไม่สนใจตัวพิมพ์เล็กใหญ่)
+				// หมายเหตุ: ไม่ใช้ \b เพราะภาษาไทยไม่มี word boundary ชัดเจนเหมือนอังกฤษ
+				$replacements[$source_word] = $target_word;
 			}
 		}
 
-		return $content;
+		if ( empty( $replacements ) ) {
+			return $content;
+		}
+
+		// === Smart Replacement Strategy ===
+		// แยก HTML Tags ออกจากเนื้อหา เพื่อไม่ให้แทนที่ใน Attribute หรือ Tag Name
+		// Pattern: แยกด้วย <...>
+		$parts = preg_split( '/(<[^>]*>)/', $content, -1, PREG_SPLIT_DELIM_CAPTURE );
+		
+		foreach ( $parts as &$part ) {
+			// ถ้าเป็น Tag (เริ่มด้วย < และจบด้วย >) ให้ข้าม
+			if ( strpos( $part, '<' ) === 0 && substr( $part, -1 ) === '>' ) {
+				continue;
+			}
+			
+			// แทนที่ในส่วนที่เป็น Text Content
+			foreach ( $replacements as $source => $target ) {
+				// ใช้ preg_replace เพื่อรองรับ Case Insensitive
+				// ใช้ Pattern ที่ปลอดภัย
+				$pattern = '/' . preg_quote($source, '/') . '/ui';
+				$part = preg_replace( $pattern, $target, $part );
+			}
+		}
+		
+		// ประกอบร่างกลับคืน
+		return implode('', $parts);
 	}
 }

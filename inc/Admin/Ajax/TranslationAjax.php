@@ -59,19 +59,21 @@ class TranslationAjax {
         $translation = sanitize_text_field($_POST['translation']);
         $lang = isset($_POST['lang']) ? sanitize_text_field($_POST['lang']) : 'en';
 
-        // === Preserve existing content and excerpt ===
-        // ดึง content และ excerpt ที่มีอยู่เดิมก่อนบันทึก
+        // === Preserve existing content, excerpt AND STATUS ===
+        // ดึง content, excerpt และ status ที่มีอยู่เดิมก่อนบันทึก
         $existing_content = TranslationMeta::get_content($page_id, $lang);
         $existing_excerpt = TranslationMeta::get_excerpt($page_id, $lang);
+        $existing_data = TranslationMeta::get($page_id, $lang);
+        $existing_status = $existing_data['status'] ?? 'published';
 
         // ใช้ TranslationMeta class (meta key: _ght_title_{lang})
-        // ส่ง content และ excerpt ที่มีอยู่แทน empty string
         TranslationMeta::save(
             $page_id, 
             $lang, 
             $translation, 
             $existing_content ?? '', 
-            $existing_excerpt ?? ''
+            $existing_excerpt ?? '',
+            $existing_status // Preserve status
         );
 
         wp_send_json_success(['message' => 'Saved']);
@@ -132,17 +134,21 @@ class TranslationAjax {
         }
 
         // === ใช้ Meta-based แทน Clone ===
+        // Translate to Draft status for review (Advanced Workflow)
+        // กำหนดสถานะเริ่มต้นเป็น 'draft' เพื่อให้ Admin ตรวจสอบก่อนเผยแพร่
         $translator = new Post();
-        $result = $translator->translate_to_meta($post_id, $target_lang, $custom_title);
+        $status = 'draft';
+        $result = $translator->translate_to_meta($post_id, $target_lang, $custom_title, $status);
 
         if (is_wp_error($result)) {
             wp_send_json_error(['message' => $result->get_error_message()]);
         }
 
         wp_send_json_success([
-            'message' => 'Translation saved!',
+            'message' => 'Translation drafted! Please review before publishing.',
             'post_id' => $post_id,
-            'target_lang' => $target_lang
+            'target_lang' => $target_lang,
+            'status' => $status
         ]);
     }
 
@@ -254,13 +260,19 @@ class TranslationAjax {
             wp_send_json_error(['message' => 'Invalid Post ID']);
         }
 
+        // รับค่า status (draft/published) หรือ default เป็น published
+        // สถานะ 'draft' จะถูกซ่อนจากหน้าเว็บ (ยกเว้น Admin)
+        // สถานะ 'published' จะแสดงให้ทุกคนเห็น
+        $status = isset($_POST['status']) ? sanitize_text_field($_POST['status']) : 'published';
+
         // บันทึกผ่าน TranslationMeta Class
         $result = TranslationMeta::save(
             $post_id,
             $lang,
             $title,
             $content,
-            $excerpt
+            $excerpt,
+            $status
         );
 
         if ($result) {
