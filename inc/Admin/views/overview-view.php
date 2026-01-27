@@ -76,9 +76,12 @@ if (!defined('ABSPATH')) exit;
 
     <!-- === Translation Status Stats (Phase 1) === -->
     <?php
-    // ดึงสถิติการแปลจาก TranslationStatus class
-    $translation_status = new \GovHybridTranslator\Core\TranslationStatus();
-    $stats = $translation_status->get_statistics();
+    // ดึงสถิติการแปลจาก TranslationStatus class (พร้อม defensive check)
+    $stats = ['none' => 0, 'pending' => 0, 'partial' => 0, 'translated' => 0, 'draft' => 0, 'needs_update' => 0];
+    if (class_exists('\GovHybridTranslator\Core\TranslationStatus')) {
+        $translation_status = new \GovHybridTranslator\Core\TranslationStatus();
+        $stats = $translation_status->get_statistics();
+    }
     ?>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <!-- ยังไม่แปล -->
@@ -99,6 +102,16 @@ if (!defined('ABSPATH')) exit;
             </div>
             <div class="text-2xl font-bold text-yellow-600"><?php echo number_format($stats['pending']); ?></div>
             <div class="text-xs text-yellow-500 mt-1">Pending</div>
+        </div>
+
+        <!-- ฉบับร่าง (Draft) -->
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 bg-gray-50">
+            <div class="flex items-center gap-2 text-gray-600 text-xs mb-2">
+                <span class="text-lg">📝</span>
+                <span>ฉบับร่าง</span>
+            </div>
+            <div class="text-2xl font-bold text-gray-600"><?php echo number_format($stats['draft']); ?></div>
+            <div class="text-xs text-gray-500 mt-1">Draft</div>
         </div>
 
         <!-- แปลบางส่วน -->
@@ -246,15 +259,32 @@ if (!defined('ABSPATH')) exit;
                                     <td class="px-6 py-3">
                                         <?php 
                                         // ตรวจสอบสถานะการแปล
-                                        $langs_translated = \GovHybridTranslator\Core\TranslationMeta::get_languages($item->ID);
-                                        $status_class = count($langs_translated) > 0 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
-                                        $status_text = count($langs_translated) > 0 ? 'Completed' : 'Pending';
+                                        $translation_status = new \GovHybridTranslator\Core\TranslationStatus();
+                                        $status = $translation_status->get_status($item->ID);
+                                        $label = \GovHybridTranslator\Core\TranslationStatus::get_status_label($status);
+                                        
+                                        $status_class = 'bg-gray-100 text-gray-800'; // Default
+                                        if ($status === 'translated') $status_class = 'bg-green-100 text-green-800';
+                                        elseif ($status === 'draft') $status_class = 'bg-gray-200 text-gray-800 border border-gray-300';
+                                        elseif ($status === 'partial') $status_class = 'bg-blue-100 text-blue-800';
+                                        elseif ($status === 'pending') $status_class = 'bg-yellow-100 text-yellow-800';
+                                        elseif ($status === 'needs_update') $status_class = 'bg-orange-100 text-orange-800';
                                         ?>
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium <?php echo $status_class; ?>"><?php echo $status_text; ?></span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium <?php echo $status_class; ?>"><?php echo esc_html($label['label']); ?></span>
                                     </td>
                                     <td class="px-6 py-3 text-sm text-gray-500">
                                         <?php 
-                                        // นับ glossary terms ที่ใช้ในเนื้อหา (ถ้ามี)
+                                        // นับ languages ที่มีการแปลแล้ว
+                                        $langs_translated = [];
+                                        if (class_exists('\GovHybridTranslator\Core\TranslationMeta')) {
+                                            $target_languages = $settings['target_languages'] ?? ['en'];
+                                            foreach ($target_languages as $lang) {
+                                                $title = \GovHybridTranslator\Core\TranslationMeta::get_title($item->ID, $lang);
+                                                if (!empty($title)) {
+                                                    $langs_translated[] = $lang;
+                                                }
+                                            }
+                                        }
                                         echo count($langs_translated) . ' lang(s)';
                                         ?>
                                     </td>

@@ -103,8 +103,11 @@
                 <p class="text-sm font-medium text-gray-700 mb-2">Popular Languages</p>
                 <div class="space-y-2">
                     <?php 
-                    $popular_languages = \GovHybridTranslator\Core\Languages::get_popular_languages();
+                    $popular_languages = [];
                     $selected_languages = isset($settings['target_languages']) ? $settings['target_languages'] : ['en'];
+                    if (class_exists('\GovHybridTranslator\Core\Languages')) {
+                        $popular_languages = \GovHybridTranslator\Core\Languages::get_popular_languages();
+                    }
                     foreach ($popular_languages as $code => $lang) : 
                         $checked = in_array($code, $selected_languages) ? 'checked' : '';
                     ?>
@@ -125,7 +128,10 @@
                 <p class="text-sm font-medium text-gray-700 mb-2">Other Languages</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <?php 
-                    $all_languages = \GovHybridTranslator\Core\Languages::get_enabled_languages();
+                    $all_languages = [];
+                    if (class_exists('\GovHybridTranslator\Core\Languages')) {
+                        $all_languages = \GovHybridTranslator\Core\Languages::get_enabled_languages();
+                    }
                     foreach ($all_languages as $code => $lang) : 
                         if ($lang['popular']) continue; // Skip popular languages
                         $checked = in_array($code, $selected_languages) ? 'checked' : '';

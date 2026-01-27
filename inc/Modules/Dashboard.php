@@ -58,6 +58,10 @@ class Dashboard {
         $all_pages = get_pages(['post_status' => 'publish', 'sort_column' => 'post_date', 'sort_order' => 'desc']);
         $all_posts = get_posts(['post_status' => 'publish', 'numberposts' => -1]);
         
+        // Initialize Settings
+        $settings_obj = new \GovHybridTranslator\Modules\Settings();
+        $settings = $settings_obj->get_settings();
+
         // ดึงข้อมูล Categories และ Menus
         $all_categories = get_terms(['taxonomy' => 'category', 'hide_empty' => false]);
         $all_menus = wp_get_nav_menus();
@@ -70,7 +74,7 @@ class Dashboard {
         // === ดึงข้อมูลจริงจาก Database ===
         
         // 1. นับ Glossary Terms จาก Custom Post Type
-        $glossary_terms = wp_count_posts('ght_glossary');
+        $glossary_terms = wp_count_posts('gov_glossary');
         $glossary_terms = isset($glossary_terms->publish) ? $glossary_terms->publish : 0;
         
         // 2. ดึง Translation Memory Stats (ถ้ามี)
@@ -87,6 +91,7 @@ class Dashboard {
         $status_stats = $translation_status->get_statistics();
         $translated_count = ($status_stats['translated'] ?? 0) + ($status_stats['partial'] ?? 0);
         $pending_count = $status_stats['pending'] ?? 0;
+        $draft_count = $status_stats['draft'] ?? 0;
         
         // 5. คำนวณ Error Rate (ยังไม่มีระบบ track จริง - ใช้ 0)
         $error_rate = 0;
@@ -96,7 +101,6 @@ class Dashboard {
         
         // === Language Distribution (ดึงข้อมูลจริง) ===
         global $wpdb;
-        $settings = (new \GovHybridTranslator\Modules\Settings())->get_settings();
         $target_languages = $settings['target_languages'] ?? ['en'];
         
         $language_distribution = [];
@@ -187,59 +191,51 @@ class Dashboard {
             ];
         }
         
+        // เตรียม TranslationStatus
+        $translation_status_service = new \GovHybridTranslator\Core\TranslationStatus();
+        $source_lang = $settings_obj->get_setting('source_language', 'th');
+
         // Filter Pages
         $untranslated_pages = [];
         $translated_pages = [];
         foreach ($all_pages as $page) {
+            // Check Source Language
             $lang = get_post_meta($page->ID, '_gov_translator_lang', true);
-            if ($lang === 'en') continue; // Skip EN pages
+            if ($lang && $lang !== $source_lang) continue; // Skip non-source pages
 
-            // ใช้ TranslationMeta แทน get_post_meta
-            $en_title = TranslationMeta::get_title($page->ID, 'en');
+            $status = $translation_status_service->get_status($page->ID);
+
+            // Logic:
+            // Tasks (Untranslated) = Not fully translated (None, Pending, Partial, Draft, Needs Update)
+            // Translated = Has some translation (Partial, Draft, Translated, Needs Update)
             
-            if (!empty($en_title)) {
-                $translated_pages[] = $page;
-            } else {
+            if ($status !== \GovHybridTranslator\Core\TranslationStatus::STATUS_TRANSLATED) {
                 $untranslated_pages[] = $page;
+            }
+
+            if ($status !== \GovHybridTranslator\Core\TranslationStatus::STATUS_NONE && 
+                $status !== \GovHybridTranslator\Core\TranslationStatus::STATUS_PENDING) {
+                $translated_pages[] = $page;
             }
         }
 
-        // Filter Posts - รองรับทั้ง clone-based และ meta-based translation
+        // Filter Posts
         $untranslated_posts = [];
         $translated_posts = [];
         foreach ($all_posts as $post) {
+            // Check Source Language
             $lang = get_post_meta($post->ID, '_gov_translator_lang', true);
-            if ($lang === 'en') continue;
+            if ($lang && $lang !== $source_lang) continue; // Skip non-source posts
 
-            $has_translation = false;
-            
-            // ตรวจสอบ Meta-based translation ก่อน
-            $en_title = TranslationMeta::get_title($post->ID, 'en');
-            if (!empty($en_title)) {
-                $has_translation = true;
-            }
-            
-            // ถ้าไม่มี meta-based → ตรวจสอบ Clone-based (legacy)
-            if (!$has_translation) {
-                $group_id = get_post_meta($post->ID, '_gov_translator_group_id', true);
-                if ($group_id) {
-                    $en_posts = get_posts([
-                        'post_type' => 'post',
-                        'meta_query' => [
-                            ['key' => '_gov_translator_group_id', 'value' => $group_id],
-                            ['key' => '_gov_translator_lang', 'value' => 'en']
-                        ],
-                        'fields' => 'ids',
-                        'posts_per_page' => 1
-                    ]);
-                    if (!empty($en_posts)) $has_translation = true;
-                }
-            }
+            $status = $translation_status_service->get_status($post->ID);
 
-            if ($has_translation) {
-                $translated_posts[] = $post;
-            } else {
+            if ($status !== \GovHybridTranslator\Core\TranslationStatus::STATUS_TRANSLATED) {
                 $untranslated_posts[] = $post;
+            }
+
+            if ($status !== \GovHybridTranslator\Core\TranslationStatus::STATUS_NONE && 
+                $status !== \GovHybridTranslator\Core\TranslationStatus::STATUS_PENDING) {
+                $translated_posts[] = $post;
             }
         }
 
@@ -248,12 +244,30 @@ class Dashboard {
         $translated_categories = [];
         if (!is_wp_error($all_categories)) {
             foreach ($all_categories as $category) {
-                // ใช้ TermTranslationMeta แทน get_term_meta
-                $trans_name = TermTranslationMeta::get_name($category->term_id, 'en');
-                if (!empty($trans_name)) {
-                    $translated_categories[] = $category;
-                } else {
+                $is_translated = false;
+                $is_fully_translated = true;
+                
+                foreach ($target_languages as $lang) {
+                    if ($lang === $source_lang) continue;
+                    $trans_name = \GovHybridTranslator\Core\TermTranslationMeta::get_name($category->term_id, $lang);
+                    
+                    if (!empty($trans_name)) {
+                        $is_translated = true;
+                    } else {
+                        $is_fully_translated = false;
+                    }
+                }
+                
+                // Logic:
+                // Untranslated = Not fully translated
+                // Translated = Has some translation
+                
+                if (!$is_fully_translated) {
                     $untranslated_categories[] = $category;
+                }
+                
+                if ($is_translated) {
+                    $translated_categories[] = $category;
                 }
             }
         }
@@ -281,13 +295,20 @@ class Dashboard {
                 
                 if ($items) {
                     foreach ($items as $item) {
-                        // ใช้ TranslationMeta แทน get_post_meta
-                        $trans_title = TranslationMeta::get_title($item->ID, 'en');
+                        $item_is_translated = false;
                         
-                        if (!empty($trans_title)) {
-                            $has_translated = true;
-                        } else {
-                            $has_untranslated = true;
+                        // Check if item is translated to ALL target languages (or at least one?)
+                        // For menu, we usually want full translation.
+                        
+                        foreach ($target_languages as $lang) {
+                            if ($lang === $source_lang) continue;
+                            $trans_title = \GovHybridTranslator\Core\TranslationMeta::get_title($item->ID, $lang);
+                            
+                            if (empty($trans_title)) {
+                                $has_untranslated = true;
+                            } else {
+                                $has_translated = true;
+                            }
                         }
                     }
                 }
@@ -297,14 +318,18 @@ class Dashboard {
             }
         }
         
-        // Get current settings
-        $settings_obj = new \GovHybridTranslator\Modules\Settings();
-        $settings = $settings_obj->get_settings();
+        // Get current settings (Already initialized)
+        // $settings_obj and $settings are available
         
         // === ดึงข้อมูล Incomplete Translations จัดกลุ่มตาม Category ===
-        $content_reviewer = new ContentReviewer();
-        $incomplete_by_category = $content_reviewer->get_incomplete_translations_by_category(50);
-        $incomplete_pages = $content_reviewer->get_incomplete_page_translations(50);
+        // ป้องกัน Fatal Error หาก ContentReviewer class ไม่มี
+        $incomplete_by_category = [];
+        $incomplete_pages = [];
+        if (class_exists('\GovHybridTranslator\Modules\ContentReviewer')) {
+            $content_reviewer = new \GovHybridTranslator\Modules\ContentReviewer();
+            $incomplete_by_category = $content_reviewer->get_incomplete_translations_by_category(50);
+            $incomplete_pages = $content_reviewer->get_incomplete_page_translations(50);
+        }
         
         require GOV_HYBRID_TRANSLATOR_PATH . 'inc/Admin/views/dashboard-view.php';
     }

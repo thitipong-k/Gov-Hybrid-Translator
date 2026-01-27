@@ -7,11 +7,15 @@
 
 if (!defined('ABSPATH')) exit;
 
-// Initialize Glossary Manager
-$glossary_manager = new \GovHybridTranslator\Modules\GlossaryManager();
-$glossary_manager->ensure_default_categories();
-$categories = $glossary_manager->get_categories();
-$initial_data = $glossary_manager->get_glossary_terms();
+// Initialize Glossary Manager (พร้อม defensive check)
+$categories = [];
+$initial_data = ['terms' => [], 'pages' => 1, 'current_page' => 1];
+if (class_exists('\GovHybridTranslator\Modules\GlossaryManager')) {
+    $glossary_manager = new \GovHybridTranslator\Modules\GlossaryManager();
+    $glossary_manager->ensure_default_categories();
+    $categories = $glossary_manager->get_categories();
+    $initial_data = $glossary_manager->get_glossary_terms();
+}
 ?>
 
 <div id="view-glossary" class="view-section hidden space-y-6">

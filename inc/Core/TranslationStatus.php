@@ -38,6 +38,7 @@ class TranslationStatus {
     const STATUS_PENDING = 'pending';     // รอแปล
     const STATUS_TRANSLATED = 'translated'; // แปลครบแล้ว
     const STATUS_PARTIAL = 'partial';     // แปลบางภาษา
+    const STATUS_DRAFT = 'draft';         // ฉบับร่าง (รออนุมัติ)
     const STATUS_NEEDS_UPDATE = 'needs_update'; // ต้องอัพเดท
 
     /**
@@ -80,12 +81,39 @@ class TranslationStatus {
         $meta_langs = TranslationMeta::get_languages($post_id);
         
         if (!empty($meta_langs)) {
-            // มี meta-based translations
-            if (count($meta_langs) >= count($target_langs)) {
+            // มี meta-based translations ให้ตรวจสอบสถานะละเอียด
+            $count_published = 0;
+            $count_draft = 0;
+
+            foreach ($target_langs as $lang) {
+                // ข้ามถ้าเป็นภาษาต้นฉบับ (เช็ค safe case)
+                if ($lang === $this->settings->get_setting('source_language', 'th')) continue;
+                
+                $has_translation = in_array($lang, $meta_langs);
+                if ($has_translation) {
+                    // เช็คสถานะ (Default: published for backward compatibility)
+                    $status = TranslationMeta::get($post_id, $lang)['status'] ?? 'published';
+                    if ($status === 'draft') {
+                        $count_draft++;
+                    } else {
+                        $count_published++;
+                    }
+                }
+            }
+
+            // Logic การกำหนดสถานะ
+            if ($count_draft > 0) {
+                // ถ้ามี Draft แม้แต่ภาษาเดียว ให้ถือเป็น Draft (รอตรวจสอบ)
+                return self::STATUS_DRAFT;
+            } elseif ($count_published >= count($target_langs)) {
+                // แปลครบทุกภาษาและ Publish หมด
                 return self::STATUS_TRANSLATED;
-            } else {
+            } elseif ($count_published > 0) {
+                // แปลบ้างแล้วแต่ไม่ครบ
                 return self::STATUS_PARTIAL;
             }
+            // ถ้ามี meta key แต่ไม่มี status (ไม่น่าเกิด) ให้ถือเป็น Partial
+            return self::STATUS_PARTIAL;
         }
         
         // === ตรวจสอบ Clone-based translations (legacy) ===
@@ -288,6 +316,7 @@ class TranslationStatus {
             'translated' => 0,
             'partial' => 0,
             'pending' => 0,
+            'draft' => 0,
             'needs_update' => 0,
             'none' => 0,
         ];
@@ -345,6 +374,11 @@ class TranslationStatus {
                 'label' => 'แปลบางส่วน',
                 'color' => 'blue',
                 'icon' => '🔵',
+            ],
+            self::STATUS_DRAFT => [
+                'label' => 'ฉบับร่าง',
+                'color' => 'gray',
+                'icon' => '📝',
             ],
             self::STATUS_NEEDS_UPDATE => [
                 'label' => 'ต้องอัพเดท',

@@ -59,8 +59,11 @@ foreach ($target_languages as $lang_code) {
             </button>
             <button onclick="switchTasksTab('design-tabs')" id="tab-tasks-btn-design-tabs" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                 <?php 
-                $dt_integration = new \GovHybridTranslator\Integrations\DesignTabsIntegration();
-                $dt_untranslated = count($dt_integration->get_untranslated_groups());
+                $dt_untranslated = 0;
+                if (class_exists('\GovHybridTranslator\Integrations\DesignTabsIntegration')) {
+                    $dt_integration = new \GovHybridTranslator\Integrations\DesignTabsIntegration();
+                    $dt_untranslated = count($dt_integration->get_untranslated_groups());
+                }
                 ?>
                 📐 Design Tabs (<?php echo $dt_untranslated; ?>)
             </button>

@@ -31,8 +31,11 @@ use GovHybridTranslator\Core\TranslationMeta;
             </button>
             <button onclick="switchTranslatedTab('design-tabs')" id="tab-translated-btn-design-tabs" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                 <?php 
-                $dt_integration_count = new \GovHybridTranslator\Integrations\DesignTabsIntegration();
-                $dt_translated_count = count($dt_integration_count->get_translated_groups());
+                $dt_translated_count = 0;
+                if (class_exists('\GovHybridTranslator\Integrations\DesignTabsIntegration')) {
+                    $dt_integration_count = new \GovHybridTranslator\Integrations\DesignTabsIntegration();
+                    $dt_translated_count = count($dt_integration_count->get_translated_groups());
+                }
                 ?>
                 📐 Design Tabs (<?php echo $dt_translated_count; ?>)
             </button>
