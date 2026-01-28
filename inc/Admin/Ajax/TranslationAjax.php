@@ -23,6 +23,9 @@ use GovHybridTranslator\Integrations\Menu;
 use GovHybridTranslator\Core\Capabilities;
 use GovHybridTranslator\Core\TranslationMeta;
 
+use GovHybridTranslator\Modules\ActivityLogger;
+
+
 class TranslationAjax {
 
     /**
@@ -77,7 +80,15 @@ class TranslationAjax {
         );
 
         wp_send_json_success(['message' => 'Saved']);
+
+        // Log activity
+        // บันทึกประวัติการแก้ไขคำแปล
+        (new ActivityLogger())->log('translation_updated', 'post', $page_id, [
+            'lang' => $lang,
+            'title' => $translation
+        ]);
     }
+
 
     /**
      * แปล Post ไปเป็นภาษาอังกฤษ (legacy)
@@ -105,7 +116,16 @@ class TranslationAjax {
             'message' => 'Translation saved!',
             'post_id' => $post_id
         ]);
+
+
+        // Log activity
+        // บันทึกประวัติการสร้างคำแปลอัตโนมัติ (Legacy)
+        (new ActivityLogger())->log('translation_generated', 'post', $post_id, [
+            'lang' => 'en',
+            'method' => 'legacy_auto'
+        ]);
     }
+
 
     /**
      * แปล Post/Page ไปยังภาษาเป้าหมายที่กำหนด
@@ -150,7 +170,16 @@ class TranslationAjax {
             'target_lang' => $target_lang,
             'status' => $status
         ]);
+
+
+        // Log activity
+        // บันทึกประวัติการสร้างคำแปลอัตโนมัติ (New Meta-based)
+        (new ActivityLogger())->log('translation_generated', 'post', $post_id, [
+            'lang' => $target_lang,
+            'status' => $status
+        ]);
     }
+
 
     /**
      * บันทึกคำแปลสำหรับ Term (Category/Tag)
@@ -171,7 +200,14 @@ class TranslationAjax {
         $translator->save_translation($term_id, $lang, $translation);
 
         wp_send_json_success(['message' => 'Saved']);
+
+        // Log activity
+        (new ActivityLogger())->log('term_translation_saved', 'term', $term_id, [
+            'lang' => $lang,
+            'translation' => $translation
+        ]);
     }
+
 
     /**
      * บันทึกคำแปลสำหรับ Menu Item
@@ -192,7 +228,14 @@ class TranslationAjax {
         $translator->save_translation($menu_item_id, $lang, $translation);
 
         wp_send_json_success(['message' => 'Saved']);
+
+        // Log activity
+        (new ActivityLogger())->log('menu_translation_saved', 'menu', $menu_item_id, [
+            'lang' => $lang,
+            'translation' => $translation
+        ]);
     }
+
 
 
     /**
@@ -224,7 +267,13 @@ class TranslationAjax {
         $result = TranslationMeta::delete($post_id, $lang);
 
         if ($result) {
+            // Log activity
+            (new ActivityLogger())->log('translation_deleted', 'post', $post_id, [
+                'lang' => $lang
+            ]);
+            
             wp_send_json_success(['message' => 'Translation deleted successfully']);
+
         } else {
             wp_send_json_error(['message' => 'Failed to delete translation']);
         }
@@ -276,7 +325,14 @@ class TranslationAjax {
         );
 
         if ($result) {
+            // Log activity
+            (new ActivityLogger())->log('translation_saved', 'post', $post_id, [
+                'lang' => $lang,
+                'status' => $status
+            ]);
+            
             wp_send_json_success(['message' => 'All translation fields saved successfully']);
+
         } else {
             wp_send_json_error(['message' => 'Failed to save translation']);
         }

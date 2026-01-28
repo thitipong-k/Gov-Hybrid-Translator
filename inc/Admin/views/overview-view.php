@@ -24,7 +24,8 @@ if (!defined('ABSPATH')) exit;
     <!-- Stats Cards Row -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <!-- Total Translations -->
-        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-shadow" onclick="switchView('translated')">
+
             <div class="flex items-center gap-2 text-gray-500 text-xs mb-2">
                 <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 <span>Total Translations</span>
@@ -34,7 +35,8 @@ if (!defined('ABSPATH')) exit;
         </div>
 
         <!-- Glossary Terms -->
-        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-shadow" onclick="switchView('glossary')">
+
             <div class="flex items-center gap-2 text-gray-500 text-xs mb-2">
                 <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                 <span>Glossary Terms</span>
@@ -85,7 +87,8 @@ if (!defined('ABSPATH')) exit;
     ?>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <!-- ยังไม่แปล -->
-        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-shadow" onclick="switchView('tasks')">
+
             <div class="flex items-center gap-2 text-gray-500 text-xs mb-2">
                 <span class="text-lg">⬜</span>
                 <span>ยังไม่แปล</span>
@@ -95,7 +98,8 @@ if (!defined('ABSPATH')) exit;
         </div>
 
         <!-- รอแปล -->
-        <div class="bg-white p-5 rounded-lg shadow-sm border border-yellow-200 bg-yellow-50">
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-yellow-200 bg-yellow-50 cursor-pointer hover:shadow-md transition-shadow" onclick="switchView('tasks')">
+
             <div class="flex items-center gap-2 text-yellow-600 text-xs mb-2">
                 <span class="text-lg">🟡</span>
                 <span>รอแปล</span>
@@ -105,7 +109,8 @@ if (!defined('ABSPATH')) exit;
         </div>
 
         <!-- ฉบับร่าง (Draft) -->
-        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 bg-gray-50">
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-gray-200 bg-gray-50 cursor-pointer hover:shadow-md transition-shadow" onclick="switchView('tasks')">
+
             <div class="flex items-center gap-2 text-gray-600 text-xs mb-2">
                 <span class="text-lg">📝</span>
                 <span>ฉบับร่าง</span>
@@ -115,7 +120,8 @@ if (!defined('ABSPATH')) exit;
         </div>
 
         <!-- แปลบางส่วน -->
-        <div class="bg-white p-5 rounded-lg shadow-sm border border-blue-200 bg-blue-50">
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-blue-200 bg-blue-50 cursor-pointer hover:shadow-md transition-shadow" onclick="switchView('tasks')">
+
             <div class="flex items-center gap-2 text-blue-600 text-xs mb-2">
                 <span class="text-lg">🔵</span>
                 <span>แปลบางส่วน</span>
@@ -125,7 +131,8 @@ if (!defined('ABSPATH')) exit;
         </div>
 
         <!-- แปลครบแล้ว -->
-        <div class="bg-white p-5 rounded-lg shadow-sm border border-green-200 bg-green-50">
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-green-200 bg-green-50 cursor-pointer hover:shadow-md transition-shadow" onclick="switchView('translated')">
+
             <div class="flex items-center gap-2 text-green-600 text-xs mb-2">
                 <span class="text-lg">✅</span>
                 <span>แปลครบแล้ว</span>
@@ -135,7 +142,8 @@ if (!defined('ABSPATH')) exit;
         </div>
 
         <!-- ต้องอัพเดท -->
-        <div class="bg-white p-5 rounded-lg shadow-sm border border-orange-200 bg-orange-50">
+        <div class="bg-white p-5 rounded-lg shadow-sm border border-orange-200 bg-orange-50 cursor-pointer hover:shadow-md transition-shadow" onclick="switchView('tasks')">
+
             <div class="flex items-center gap-2 text-orange-600 text-xs mb-2">
                 <span class="text-lg">🟠</span>
                 <span>ต้องอัพเดท</span>
@@ -248,10 +256,20 @@ if (!defined('ABSPATH')) exit;
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             <?php 
-                            $recent_items = array_slice(array_merge($translated_pages, $translated_posts), 0, 5);
+                            // Merge and Sort by Modified Date
+                            // รวมข้อมูล Pages และ Posts แล้วเรียงลำดับตามวันที่แก้ไขล่าสุด (post_modified)
+                            // เพื่อให้รายการที่เพิ่งแปลหรือแก้ไข แสดงขึ้นมาเป็นอันดับแรก
+                            $recent_items = array_merge($translated_pages, $translated_posts);
+                            usort($recent_items, function($a, $b) {
+                                return strtotime($b->post_modified) - strtotime($a->post_modified);
+                            });
+                            
+                            $recent_items = array_slice($recent_items, 0, 5);
+                            
                             if (!empty($recent_items)) : 
                                 foreach ($recent_items as $item) : 
                             ?>
+
                                 <tr class="hover:bg-gray-50 transition-colors">
                                     <td class="px-6 py-3">
                                         <div class="text-sm font-medium text-gray-900 truncate max-w-xs"><?php echo esc_html($item->post_title); ?></div>

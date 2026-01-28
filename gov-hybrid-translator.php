@@ -9,7 +9,7 @@
  * Domain Path: /languages
  * 
  * Changelog:
- * 2.4.0 - Advanced Translation Workflow (Draft/Publish), Smart Glossary (Regex), Status Management
+ * 2.4.0 - Advanced Translation Workflow, Smart Glossary, Activity Logs Audit Trail, Dashboard Data Fixes
  * 2.3.0 - Complex HTML translation fix, Delete Translation button, Custom HTML block support
  * 2.2.0 - View Original/Translated tabs, Avada Theme Builder support
  * 2.1.1 - Category-Based Translation Queue, Fixed 404 error on language switch

@@ -31,6 +31,8 @@ use GovHybridTranslator\Integrations\Menu;
 use GovHybridTranslator\Admin\Ajax;
 use GovHybridTranslator\Modules\ContentReviewer;
 use GovHybridTranslator\Core\Capabilities;
+use GovHybridTranslator\Modules\ActivityLogger;
+
 
 class Loader {
 
@@ -40,9 +42,12 @@ class Loader {
 	 */
 	public function run() {
 		$this->load_dependencies();
+		$this->check_version();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 	}
+
+
 
 	/**
 	 * โหลด dependencies และ initialize classes ทั้งหมด
@@ -167,7 +172,12 @@ class Loader {
 			// รองรับ: เลือกภาษาเป้าหมาย, เลือก post types, first publish only
 			$auto_translator = new \GovHybridTranslator\Modules\AutoTranslator();
 			$auto_translator->register();
+
+			// === Phase 3.1: Activity Logs ===
+			$activity_logger = new ActivityLogger();
+			$activity_logger->register();
 		}
+
 
 		// === REST API (ใช้ได้ทั้ง Frontend และ Admin) ===
 		$rest_api = new \GovHybridTranslator\API\RestAPI();
@@ -175,7 +185,17 @@ class Loader {
 	}
 
 	/**
+	 * ตรวจสอบเวอร์ชั่นและอัพเดต Database ถ้าจำเป็น
+	 */
+	private function check_version() {
+		if ( is_admin() && get_option( 'gov_hybrid_translator_db_version' ) !== GOV_HYBRID_TRANSLATOR_VERSION ) {
+			ActivityLogger::install_table();
+		}
+	}
+
+	/**
 	 * ลงทะเบียน Admin hooks เพิ่มเติม
+
 	 * (hooks ส่วนใหญ่จัดการใน classes แต่ละตัว)
 	 */
 	private function define_admin_hooks() {
@@ -210,8 +230,12 @@ class Loader {
 		// ลงทะเบียน Custom Post Type ทันที
 		$glossary = new Glossary();
 		$glossary->register();
+
+		// สร้าง Table สำหรับ Activity Logs
+		ActivityLogger::install_table();
 		
 		// === สร้าง Rewrite Rules สำหรับ path-based URLs ===
+
 		// Router จะสร้าง rules สำหรับ /en/, /zh/, etc.
 		$router = new UrlRouter();
 		$router->add_query_vars([]);  // ลงทะเบียน query vars

@@ -75,9 +75,24 @@ class TranslationMeta {
         add_post_meta($post_id, $time_key, current_time('mysql'), true);
 
         // ตรวจสอบว่าบันทึกสำเร็จหรือไม่
+        // ตรวจสอบว่าบันทึกสำเร็จหรือไม่
         $saved_title = get_post_meta($post_id, $title_key, true);
-        return !empty($saved_title);
+        
+        if (!empty($saved_title)) {
+            // Update Post Modified Date to reflect the translation change
+            // อัปเดตวันที่แก้ไขของ Post เพื่อให้ "Recent Translations" แสดงผลถูกต้อง (ดันขึ้นบนสุด)
+            wp_update_post([
+                'ID' => $post_id,
+                'post_modified' => current_time('mysql'),
+                'post_modified_gmt' => current_time('mysql', 1)
+            ]);
+            
+            return true;
+        }
+        
+        return false;
     }
+
 
     /**
      * ดึงคำแปลทั้งหมดสำหรับภาษาที่กำหนด

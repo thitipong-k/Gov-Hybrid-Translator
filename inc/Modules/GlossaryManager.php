@@ -175,8 +175,16 @@ class GlossaryManager {
             wp_set_object_terms($post_id, $data['category'], 'gov_glossary_type');
         }
 
+        // Log activity
+        // บันทึกกิจกรรมการเพิ่มคำศัพท์
+        (new ActivityLogger())->log('glossary_added', 'glossary', $post_id, [
+            'term' => $data['thai_term'],
+            'en_term' => $data['english_term']
+        ]);
+
         return $post_id;
     }
+
 
     /**
      * Update existing glossary term.
@@ -210,8 +218,15 @@ class GlossaryManager {
             wp_set_object_terms($id, $data['category'], 'gov_glossary_type');
         }
 
+        // Log activity
+        // บันทึกกิจกรรมการแก้ไขคำศัพท์
+        (new ActivityLogger())->log('glossary_updated', 'glossary', $id, [
+            'changes' => $data
+        ]);
+
         return true;
     }
+
 
     /**
      * Delete glossary term.
@@ -226,14 +241,26 @@ class GlossaryManager {
             return new \WP_Error('invalid_post', 'Glossary term not found.');
         }
 
+        // เก็บชื่อไว้ก่อนลบ เพื่อนำไปบันทึก Log
+        $term_name = $post->post_title;
+        $term_en = get_post_meta($id, '_gov_glossary_en_term', true);
+
         $result = wp_delete_post($id, true);
 
         if (!$result) {
             return new \WP_Error('delete_failed', 'Failed to delete glossary term.');
         }
 
+        // Log activity
+        // บันทึกกิจกรรมการลบคำศัพท์ (ระบุชื่อคำศัพท์ที่ลบไป)
+        (new ActivityLogger())->log('glossary_deleted', 'glossary', $id, [
+            'term' => $term_name,
+            'en_term' => $term_en
+        ]);
+
         return true;
     }
+
 
     /**
      * Get all glossary categories.

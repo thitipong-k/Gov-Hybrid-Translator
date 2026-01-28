@@ -54,9 +54,10 @@ class Dashboard {
      * ดึงข้อมูลทั้งหมดและส่งไปยัง View
      */
     public function render_dashboard() {
-        // ดึงข้อมูล Pages และ Posts ทั้งหมด
-        $all_pages = get_pages(['post_status' => 'publish', 'sort_column' => 'post_date', 'sort_order' => 'desc']);
-        $all_posts = get_posts(['post_status' => 'publish', 'numberposts' => -1]);
+        // ดึงข้อมูล Pages และ Posts ทั้งหมด (Sort by Modified Date for "Recent Translations")
+        $all_pages = get_pages(['post_status' => 'publish', 'sort_column' => 'post_modified', 'sort_order' => 'desc']);
+        $all_posts = get_posts(['post_status' => 'publish', 'numberposts' => -1, 'orderby' => 'modified', 'order' => 'DESC']);
+
         
         // Initialize Settings
         $settings_obj = new \GovHybridTranslator\Modules\Settings();
@@ -79,7 +80,9 @@ class Dashboard {
         
         // 2. ดึง Translation Memory Stats (ถ้ามี)
         $tm_stats = \GovHybridTranslator\Modules\TranslationMemory::get_stats();
-        $ai_credits_used = ($tm_stats['hits'] ?? 0) + ($tm_stats['misses'] ?? 0) + ($tm_stats['saves'] ?? 0);
+        // API Credits Used = Misses only (Requests sent to API)
+        // นับเฉพาะ Misses เท่านั้น เพราะคือจำนวนครั้งที่ต้องเรียก API จริง (Hits = ใช้จาก Memory ไม่เสีย Credit)
+        $ai_credits_used = ($tm_stats['misses'] ?? 0);
         // AI Credits Limit: ดึงจาก settings หรือใช้ค่า based on usage
         $ai_credits_limit = max($ai_credits_used * 2, 100); // อย่างน้อย 100 หรือ 2x ของ usage
         
@@ -137,14 +140,16 @@ class Dashboard {
             $month_end = date('Y-m-t', strtotime("-$i months"));
             $month_name = date('M', strtotime("-$i months"));
             
-            // นับ posts ที่มีการแปลในเดือนนี้ (based on meta update)
+            // นับ posts ที่มีการแปลในเดือนนี้ (based on translated_at meta)
+            // ใช้ _ght_translated_at_% เพื่อดูเวลาที่แปลจริงๆ แทน post_modified
             $count = $wpdb->get_var($wpdb->prepare(
-                "SELECT COUNT(DISTINCT pm.post_id) 
-                 FROM {$wpdb->postmeta} pm
-                 INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID
-                 WHERE pm.meta_key LIKE '_ght_title_%'
-                 AND p.post_modified >= %s AND p.post_modified <= %s",
-                $month_start, $month_end . ' 23:59:59'
+                "SELECT COUNT(DISTINCT post_id) 
+                 FROM {$wpdb->postmeta}
+                 WHERE meta_key LIKE %s
+                 AND meta_value >= %s AND meta_value <= %s",
+                '_ght_translated_at_%',
+                $month_start . ' 00:00:00',
+                $month_end . ' 23:59:59'
             ));
             
             $monthly_trends[] = [
@@ -329,8 +334,17 @@ class Dashboard {
             $content_reviewer = new \GovHybridTranslator\Modules\ContentReviewer();
             $incomplete_by_category = $content_reviewer->get_incomplete_translations_by_category(50);
             $incomplete_pages = $content_reviewer->get_incomplete_page_translations(50);
+            $incomplete_pages = $content_reviewer->get_incomplete_page_translations(50);
         }
+
+        // === Activity Logs ===
+        // ดึงข้อมูล Logs ล่าสุดมาแสดงใน Dashboard
+        $activity_logger = new \GovHybridTranslator\Modules\ActivityLogger();
+        $paged_logs = isset($_GET['paged_logs']) ? absint($_GET['paged_logs']) : 1;
+        // ดึง 20 รายการล่าสุด ตามหน้าปัจจุบัน
+        $logs_data = $activity_logger->get_logs(['limit' => 20, 'offset' => ($paged_logs - 1) * 20]);
         
         require GOV_HYBRID_TRANSLATOR_PATH . 'inc/Admin/views/dashboard-view.php';
     }
+
 }

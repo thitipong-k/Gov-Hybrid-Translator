@@ -9,6 +9,7 @@ use GovHybridTranslator\Settings\AI;
 use GovHybridTranslator\Settings\Content;
 use GovHybridTranslator\Settings\LanguageSwitcher;
 use GovHybridTranslator\Settings\Advanced;
+use GovHybridTranslator\Modules\ActivityLogger;
 
 /**
  * Settings Module
@@ -134,6 +135,13 @@ class Settings {
             'settings' => $sanitized_settings,
             'site_identity_count' => $site_identity_count,
             'permissions_count' => $permissions_count,
+        ]);
+
+        // Log activity
+        (new ActivityLogger())->log('settings_updated', 'settings', '', [
+            'count' => count($sanitized_settings),
+            'site_identity' => $site_identity_count > 0,
+            'permissions' => $permissions_count
         ]);
     }
 

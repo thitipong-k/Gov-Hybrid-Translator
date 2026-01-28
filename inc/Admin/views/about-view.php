@@ -5,7 +5,7 @@
             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
         </div>
         <h2 class="text-2xl font-bold text-gray-800 mb-2">Gov Hybrid Translator</h2>
-        <p class="text-gray-500 mb-6">Version 1.2.0</p>
+        <p class="text-gray-500 mb-6">Version <?php echo GOV_HYBRID_TRANSLATOR_VERSION; ?></p>
         <p class="text-gray-600 max-w-2xl mx-auto mb-8">
             ปลั๊กอินสำหรับแปลภาษาเว็บไซต์หน่วยงานราชการ ด้วยระบบ Hybrid (Google Translate + Custom Glossary) 
             ช่วยให้การสื่อสารข้อมูลภาครัฐเข้าถึงชาวต่างชาติได้อย่างถูกต้องและแม่นยำ
