@@ -209,28 +209,4 @@ if (!defined('ABSPATH')) exit;
 </style>
 
 <!-- JavaScript สำหรับ Expand/Collapse -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const expandBtn = document.getElementById('ght-modal-expand-btn');
-    const modalContainer = document.getElementById('ght-modal-container');
-    const icon = expandBtn ? expandBtn.querySelector('.dashicons') : null;
-    
-    if (expandBtn && modalContainer && icon) {
-        expandBtn.addEventListener('click', function() {
-            // Toggle expanded class
-            modalContainer.classList.toggle('ght-modal-expanded');
-            
-            // Toggle icon
-            if (modalContainer.classList.contains('ght-modal-expanded')) {
-                icon.classList.remove('dashicons-editor-expand');
-                icon.classList.add('dashicons-editor-contract');
-                expandBtn.title = 'Collapse';
-            } else {
-                icon.classList.remove('dashicons-editor-contract');
-                icon.classList.add('dashicons-editor-expand');
-                expandBtn.title = 'Expand';
-            }
-        });
-    }
-});
-</script>
+<!-- Script moved to assets/js/admin-dashboard.js -->

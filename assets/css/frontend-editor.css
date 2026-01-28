@@ -1,0 +1,224 @@
+/**
+ * Gov Hybrid Translator - Frontend Editor Sidebar
+ */
+
+/* Variable Definitions */
+:root {
+    --ght-sidebar-width: 400px;
+    --ght-sidebar-bg: #ffffff;
+    --ght-sidebar-text: #1e293b;
+    --ght-primary-color: #2563eb;
+    --ght-border-color: #e2e8f0;
+    --ght-z-index: 999999;
+}
+
+/* Sidebar Container */
+#ght-frontend-editor {
+    position: fixed;
+    top: 0;
+    right: calc(var(--ght-sidebar-width) * -1); /* Hidden by default */
+    width: var(--ght-sidebar-width);
+    height: 100vh;
+    background: var(--ght-sidebar-bg);
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: var(--ght-z-index);
+    transition: right 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+#ght-frontend-editor.active {
+    right: 0;
+}
+
+/* Header */
+.ght-editor-header {
+    padding: 15px 20px;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--ght-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ght-editor-header h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ght-sidebar-text);
+}
+
+.ght-close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #64748b;
+    padding: 0;
+    line-height: 1;
+}
+
+.ght-close-btn:hover {
+    color: #ef4444;
+}
+
+/* Body */
+.ght-editor-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* Form Groups */
+.ght-form-group {
+    margin-bottom: 20px;
+}
+
+.ght-form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.ght-form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--ght-border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--ght-sidebar-text);
+    box-sizing: border-box; /* Important for width: 100% */
+}
+
+.ght-form-control:focus {
+    outline: none;
+    border-color: var(--ght-primary-color);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+textarea.ght-form-control {
+    min-height: 150px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+/* Status Select */
+select.ght-form-control {
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* Footer (Actions) */
+.ght-editor-footer {
+    padding: 15px 20px;
+    border-top: 1px solid var(--ght-border-color);
+    background: #f8fafc;
+    display: flex;
+    justify-content: flex-end; /* Align buttons to right */
+    gap: 10px;
+}
+
+.ght-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.ght-btn-secondary {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.ght-btn-secondary:hover {
+    background: #cbd5e1;
+}
+
+.ght-btn-primary {
+    background: var(--ght-primary-color);
+    color: white;
+}
+
+.ght-btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.ght-btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Original Content (Reference) */
+.ght-original-content {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--ght-border-color);
+}
+
+.ght-original-toggle {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+}
+
+.ght-original-toggle svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s;
+}
+
+.ght-original-toggle.open svg {
+    transform: rotate(90deg);
+}
+
+.ght-original-preview {
+    margin-top: 10px;
+    background: #f1f5f9;
+    padding: 15px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #475569;
+    display: none; /* Hidden by default */
+}
+
+.ght-original-preview h4 {
+    margin: 0 0 5px 0;
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.ght-original-preview div {
+    white-space: pre-wrap;
+}
+
+/* Overlay */
+.ght-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: calc(var(--ght-z-index) - 1);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s;
+}
+
+.ght-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}

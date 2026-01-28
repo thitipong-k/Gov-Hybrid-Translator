@@ -32,6 +32,7 @@ use GovHybridTranslator\Admin\Ajax;
 use GovHybridTranslator\Modules\ContentReviewer;
 use GovHybridTranslator\Core\Capabilities;
 use GovHybridTranslator\Modules\ActivityLogger;
+use GovHybridTranslator\Modules\FrontendEditor;
 
 
 class Loader {
@@ -173,10 +174,15 @@ class Loader {
 			$auto_translator = new \GovHybridTranslator\Modules\AutoTranslator();
 			$auto_translator->register();
 
-			// === Phase 3.1: Activity Logs ===
+		// === Phase 3.1: Activity Logs ===
 			$activity_logger = new ActivityLogger();
 			$activity_logger->register();
 		}
+		
+		// === Phase 4: Frontend Visual Editor ===
+		// ปุ่มแก้ไขคำแปลบน Admin Bar (แสดงเฉพาะหน้า Frontend)
+		$frontend_editor = new FrontendEditor();
+		$frontend_editor->run();
 
 
 		// === REST API (ใช้ได้ทั้ง Frontend และ Admin) ===

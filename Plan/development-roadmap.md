@@ -22,7 +22,7 @@
   - สร้าง Table ใหม่ `wp_ght_activity_logs`
   - สร้าง Class `ActivityLogger`
 
-### 3.2 Frontend Visual Editor 👁️
+### 3.2 Frontend Visual Editor 👁️ (Completed)
 
 ระบบแก้ไขคำแปลจากหน้าเว็บไซต์จริง เพื่อให้เห็นบริบทและจัดรูปแบบได้ถูกต้อง
 
@@ -34,7 +34,7 @@
   - ใช้ JavaScript/AJAX โหลดข้อมูล TranslationMeta มาแสดง
   - บันทึกกลับด้วย `save_full_translation` API เดิม
 
-### 3.3 Advanced Workflow (Approval Chain) ✅
+### 3.3 Advanced Workflow (Approval Chain) ✅ (Completed)
 
 เพิ่มระดับการอนุมัติเนื้อหา เพื่อรองรับกระบวนการทำงานของราชการ
 

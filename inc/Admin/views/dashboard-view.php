@@ -13,43 +13,7 @@
             }
         }
     </script>
-    <script>
-        function switchView(viewName) {
-            // Hide all views
-            const views = document.querySelectorAll('.view-section');
-            views.forEach(view => {
-                view.classList.add('hidden');
-            });
-
-            // Show selected view
-            const targetView = document.getElementById('view-' + viewName);
-            if (targetView) {
-                targetView.classList.remove('hidden');
-            }
-
-            // Update sidebar active state
-            const navLinks = document.querySelectorAll('.sidebar-item');
-            navLinks.forEach(link => {
-                link.classList.remove('active', 'bg-gov-50', 'text-gov-600', 'font-medium');
-                link.classList.add('text-gray-600');
-                
-                // Check if this link corresponds to the view
-                if (link.getAttribute('onclick').includes("'" + viewName + "'")) {
-                     link.classList.add('active', 'bg-gov-50', 'text-gov-600', 'font-medium');
-                     link.classList.remove('text-gray-600');
-                }
-            });
-            
-            // Save state (optional)
-            localStorage.setItem('ght_current_view', viewName);
-        }
-
-        // Restore state on load
-        document.addEventListener('DOMContentLoaded', () => {
-             const savedView = localStorage.getItem('ght_current_view') || 'overview';
-             switchView(savedView);
-        });
-    </script>
+    <!-- Script moved to assets/js/admin-dashboard.js -->
     <style>
         .view-section {
             animation: fadeIn 0.3s ease-in-out;

@@ -55,8 +55,17 @@ class Settings {
         }
 
         // Get posted data
-        $settings_json = isset($_POST['settings']) ? $_POST['settings'] : '{}';
-        $settings = json_decode(stripslashes($settings_json), true);
+        // Support both JSON 'settings' param and direct POST values (from serialize())
+        if (isset($_POST['settings'])) {
+            $settings_json = $_POST['settings'];
+            $settings = json_decode(stripslashes($settings_json), true);
+        } else {
+            // Direct POST (exclude WP system fields)
+            $settings = $_POST;
+            unset($settings['action']);
+            unset($settings['nonce']);
+            unset($settings['_wp_http_referer']);
+        }
 
         // Sanitize settings using specialized classes
         $sanitized_settings = $this->sanitize_settings($settings);

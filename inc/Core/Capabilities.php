@@ -29,7 +29,8 @@ class Capabilities {
         'ght_view_dashboard',
         'ght_translate',
         'ght_manage_glossary',
-        'ght_manage_settings'
+        'ght_manage_settings',
+        'ght_approve_translation'
     ];
     
     /**
@@ -41,13 +42,15 @@ class Capabilities {
             'ght_view_dashboard'  => true,
             'ght_translate'       => true,
             'ght_manage_glossary' => true,
-            'ght_manage_settings' => true
+            'ght_manage_settings' => true,
+            'ght_approve_translation' => true
         ],
         'editor' => [
             'ght_view_dashboard'  => true,
             'ght_translate'       => true,
             'ght_manage_glossary' => false,
-            'ght_manage_settings' => false
+            'ght_manage_settings' => false,
+            'ght_approve_translation' => true
         ]
     ];
     
@@ -146,6 +149,15 @@ class Capabilities {
      */
     public static function can_manage_settings() {
         return self::can('ght_manage_settings');
+    }
+
+    /**
+     * ตรวจสอบว่าผู้ใช้ปัจจุบันสามารถอนุมัติคำแปลได้หรือไม่
+     * 
+     * @return bool true ถ้าอนุมัติได้
+     */
+    public static function can_approve_translation() {
+        return self::can('ght_approve_translation');
     }
     
     /**
@@ -264,7 +276,8 @@ class Capabilities {
             'ght_view_dashboard'  => 'เข้าถึง Dashboard หลัก',
             'ght_translate'       => 'แปล Posts/Pages และ Review Content',
             'ght_manage_glossary' => 'จัดการ Glossary (เพิ่ม/ลบ/แก้ไข คำศัพท์)',
-            'ght_manage_settings' => 'แก้ไข Settings ของ Plugin'
+            'ght_manage_settings' => 'แก้ไข Settings ของ Plugin',
+            'ght_approve_translation' => 'อนุมัติคำแปล (Review & Approve)'
         ];
     }
 }

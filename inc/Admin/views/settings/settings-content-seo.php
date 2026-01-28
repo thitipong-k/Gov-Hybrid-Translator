@@ -92,22 +92,24 @@
             </p>
 
             <?php
-            // โหลด Settings สำหรับ Auto-Translate
-            $auto_settings = get_option('ght_auto_translate_settings', [
-                'enabled' => false,
-                'target_languages' => ['en'],
-                'post_types' => ['post', 'page'],
-                'first_publish_only' => true,
-            ]);
+            // โหลด Settings สำหรับ Auto-Translate (ใช้จาก $settings หลัก)
+            $auto_settings = [
+                'enabled' => $settings['auto_translate_enabled'] ?? false,
+                'target_languages' => $settings['auto_translate_languages'] ?? ['en'],
+                'post_types' => $settings['auto_translate_post_types'] ?? ['post', 'page'],
+                'first_publish_only' => $settings['auto_translate_first_only'] ?? true,
+            ];
 
             // ดึงรายการภาษาที่รองรับ
             $available_languages = [
                 'en' => 'English (EN)',
-                'zh' => '中文 (ZH)',
-                'ja' => '日本語 (JA)',
-                'ko' => '한국어 (KO)',
-                'vi' => 'Tiếng Việt (VI)',
-                'my' => 'မြန်မာ (MY)',
+                'zh' => 'Chinese (ZH)',
+                'ja' => 'Japanese (JA)',
+                'ko' => 'Korean (KO)',
+                'vi' => 'Vietnamese (VI)',
+                'my' => 'Myanmar (MY)',
+                'de' => 'German (DE)',
+                'fr' => 'French (FR)',
             ];
 
             // ดึงรายการ Post Types
@@ -198,16 +200,6 @@
         </div>
 
         <!-- JavaScript สำหรับ Toggle Options -->
-        <script>
-        function toggleAutoTranslateOptions() {
-            var checkbox = document.getElementById('auto_translate_enabled');
-            var options = document.getElementById('auto_translate_options');
-            if (checkbox.checked) {
-                options.classList.remove('hidden');
-            } else {
-                options.classList.add('hidden');
-            }
-        }
-        </script>
+        <!-- Script moved to assets/js/admin-dashboard.js -->
     </div>
 </div>

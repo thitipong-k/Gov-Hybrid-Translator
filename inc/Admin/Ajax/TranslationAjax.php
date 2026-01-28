@@ -331,6 +331,14 @@ class TranslationAjax {
                 'status' => $status
             ]);
             
+            // Send Email Notification if status is 'reviewing'
+            // ส่งอีเมลแจ้งเตือนผู้มีสิทธิ์อนุมัติ หากสถานะเป็น 'reviewing'
+            if ($status === 'reviewing') {
+                if (class_exists('\GovHybridTranslator\Modules\EmailNotifier')) {
+                    \GovHybridTranslator\Modules\EmailNotifier::send_review_request($post_id, $lang);
+                }
+            }
+            
             wp_send_json_success(['message' => 'All translation fields saved successfully']);
 
         } else {

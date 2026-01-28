@@ -689,6 +689,18 @@ class Router {
     }
 
     /**
+     * ดึงภาษาปัจจุบัน (รวม Default 'th')
+     * 
+     * @static
+     * @return string
+     */
+    public static function get_current_lang() {
+        $lang = self::get_language_from_query();
+        return $lang ? $lang : 'th';
+    }
+
+
+    /**
      * ดึงภาษาจาก Query Variable
      * 
      * ใช้สำหรับดึงภาษาจาก URL ที่ถูก parse แล้ว

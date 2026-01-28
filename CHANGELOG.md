@@ -2,7 +2,17 @@
 
 การเปลี่ยนแปลงทั้งหมดของ Gov Hybrid Translator plugin
 
-## [2.4.0] - 2026-01-27
+## [2.5.1] - 2026-01-28
+
+### แก้ไข (Fixed)
+
+- **Critical:** แก้ไขปัญหาการบันทึก Settings แล้วค่าหายทั้งหมด (รวมถึง API Key) เนื่องจาก AJAX data format conflict
+- **Permissions:** แก้ไข Checkbox "Approve translation" ไม่บันทึกค่าเมื่อติ๊กออก
+- **Content & SEO:** เพิ่ม Whitelist settings สำหรับ Auto-translate on Publish ที่ขาดหายไป
+- **Language Switcher:** แก้ไข logic การบันทึก Checkbox (False values) และกู้คืน Javascript ที่หายไป (Preview/Interactive UI)
+- **Refactor:** ย้าย Inline JavaScript ออกจากไฟล์ PHP view ทั้งหมดไปยัง `admin-dashboard.js` เพื่อประสิทธิภาพและลด Syntax Errors
+
+## [2.5.0] - 2026-01-27
 
 ### เพิ่มเติม (Added)
 

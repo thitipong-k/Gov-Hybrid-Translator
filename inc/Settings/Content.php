@@ -27,6 +27,11 @@ class Content {
             'seo_canonical' => true,
             'seo_sitemap' => true,
             'auto_translate_slugs' => true,
+            // Auto-Translate on Publish
+            'auto_translate_enabled' => false,
+            'auto_translate_languages' => ['en'],
+            'auto_translate_post_types' => ['post', 'page'],
+            'auto_translate_first_only' => true,
         ];
     }
 
@@ -49,19 +54,36 @@ class Content {
 
         $sanitized['seo_hreflang'] = isset($settings['seo_hreflang']) 
             ? (bool)$settings['seo_hreflang'] 
-            : true;
+            : false; // Checkbox unchecked = false
 
         $sanitized['seo_canonical'] = isset($settings['seo_canonical']) 
             ? (bool)$settings['seo_canonical'] 
-            : true;
+            : false; // Checkbox unchecked = false
 
         $sanitized['seo_sitemap'] = isset($settings['seo_sitemap']) 
             ? (bool)$settings['seo_sitemap'] 
-            : true;
+            : false; // Checkbox unchecked = false
 
         $sanitized['auto_translate_slugs'] = isset($settings['auto_translate_slugs']) 
             ? (bool)$settings['auto_translate_slugs'] 
-            : true;
+            : false; // Checkbox unchecked = false
+
+        // Auto-Translate on Publish
+        $sanitized['auto_translate_enabled'] = isset($settings['auto_translate_enabled']) 
+            ? (bool)$settings['auto_translate_enabled'] 
+            : false;
+
+        $sanitized['auto_translate_languages'] = isset($settings['auto_translate_languages']) 
+            ? array_map('sanitize_text_field', (array)$settings['auto_translate_languages']) 
+            : ['en'];
+
+        $sanitized['auto_translate_post_types'] = isset($settings['auto_translate_post_types']) 
+            ? array_map('sanitize_text_field', (array)$settings['auto_translate_post_types']) 
+            : ['post', 'page'];
+
+        $sanitized['auto_translate_first_only'] = isset($settings['auto_translate_first_only']) 
+            ? (bool)$settings['auto_translate_first_only'] 
+            : false;
 
         return $sanitized;
     }
@@ -79,6 +101,11 @@ class Content {
             'seo_canonical',
             'seo_sitemap',
             'auto_translate_slugs',
+            // Auto-Translate
+            'auto_translate_enabled',
+            'auto_translate_languages',
+            'auto_translate_post_types',
+            'auto_translate_first_only',
         ];
     }
 }

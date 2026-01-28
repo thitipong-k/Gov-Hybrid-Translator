@@ -84,8 +84,10 @@ $all_caps = Capabilities::CAPABILITIES;
                                            ($cap === 'ght_manage_settings' || $cap === 'ght_view_dashboard'));
                                 $checked = isset($role_data['caps'][$cap]) && $role_data['caps'][$cap];
                                 ?>
+                                <input type="hidden" name="permissions[<?php echo esc_attr($role_slug); ?>][<?php echo esc_attr($cap); ?>]" value="0">
                                 <input type="checkbox" 
                                        name="permissions[<?php echo esc_attr($role_slug); ?>][<?php echo esc_attr($cap); ?>]"
+                                       value="1"
                                        class="ght-permission-checkbox h-4 w-4 text-gov-600 focus:ring-gov-500 border-gray-300 rounded"
                                        data-role="<?php echo esc_attr($role_slug); ?>"
                                        data-cap="<?php echo esc_attr($cap); ?>"
@@ -121,65 +123,4 @@ $all_caps = Capabilities::CAPABILITIES;
     </div>
 </div>
 
-<script>
-/**
- * รีเซ็ตสิทธิ์กลับค่าเริ่มต้น
- * จะถามยืนยันก่อนดำเนินการ
- */
-function resetPermissionsToDefaults() {
-    if (!confirm('ต้องการรีเซ็ตสิทธิ์กลับค่าเริ่มต้นหรือไม่? การเปลี่ยนแปลงจะมีผลหลังกด Save Changes')) {
-        return;
-    }
-    
-    // ค่าเริ่มต้น
-    const defaults = {
-        'administrator': {
-            'ght_view_dashboard': true,
-            'ght_translate': true,
-            'ght_manage_glossary': true,
-            'ght_manage_settings': true
-        },
-        'editor': {
-            'ght_view_dashboard': true,
-            'ght_translate': true,
-            'ght_manage_glossary': false,
-            'ght_manage_settings': false
-        }
-    };
-    
-    // วนลูปตั้งค่า checkboxes
-    document.querySelectorAll('.ght-permission-checkbox').forEach(checkbox => {
-        const role = checkbox.dataset.role;
-        const cap = checkbox.dataset.cap;
-        
-        if (defaults[role] && typeof defaults[role][cap] !== 'undefined') {
-            checkbox.checked = defaults[role][cap];
-        } else {
-            checkbox.checked = false;
-        }
-    });
-    
-    showNotification('รีเซ็ตค่าแล้ว กรุณากด Save Changes เพื่อบันทึก', 'info');
-}
-
-/**
- * เก็บค่าสิทธิ์สำหรับบันทึก
- * เรียกจาก saveSettings() ใน dashboard JS
- */
-function getPermissionsData() {
-    const permissions = {};
-    
-    document.querySelectorAll('.ght-permission-checkbox').forEach(checkbox => {
-        const role = checkbox.dataset.role;
-        const cap = checkbox.dataset.cap;
-        
-        if (!permissions[role]) {
-            permissions[role] = {};
-        }
-        
-        permissions[role][cap] = checkbox.checked;
-    });
-    
-    return permissions;
-}
-</script>
+<!-- Scripts moved to assets/js/admin-dashboard.js -->

@@ -76,22 +76,22 @@ class LanguageSwitcher {
         // แสดงธงชาติ (boolean)
         $sanitized['show_flags'] = isset($settings['show_flags']) 
             ? (bool)$settings['show_flags'] 
-            : true;
+            : false;
 
         // แสดงชื่อภาษา (boolean)
         $sanitized['show_names'] = isset($settings['show_names']) 
             ? (bool)$settings['show_names'] 
-            : true;
+            : false;
 
         // ตำแหน่งที่แสดง (array)
         $sanitized['placement'] = isset($settings['placement']) 
             ? array_map('sanitize_text_field', (array)$settings['placement']) 
-            : ['floating', 'menu'];
+            : []; // Empty if nothing selected
 
         // จำการเลือกภาษา (boolean)
         $sanitized['remember_preference'] = isset($settings['remember_preference']) 
             ? (bool)$settings['remember_preference'] 
-            : true;
+            : false;
 
         // เปลี่ยนภาษาอัตโนมัติ (boolean)
         $sanitized['auto_redirect'] = isset($settings['auto_redirect']) 
@@ -101,7 +101,7 @@ class LanguageSwitcher {
         // แสดงภาษาหลัก (boolean)
         $sanitized['show_source_lang'] = isset($settings['show_source_lang']) 
             ? (bool)$settings['show_source_lang'] 
-            : true;
+            : false;
 
         // === ตั้งค่า Floating Button ===
         

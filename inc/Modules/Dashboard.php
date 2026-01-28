@@ -30,6 +30,7 @@ class Dashboard {
      */
     public function register() {
         add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
+        add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_assets' ] );
     }
 
     /**
@@ -47,6 +48,61 @@ class Dashboard {
             'dashicons-translation',            // Icon
             2                                   // Position
         );
+
+        // Submenu: Dashboard (Default)
+        add_submenu_page(
+            'gov-hybrid-translator',
+            'Dashboard',
+            'Dashboard',
+            'ght_view_dashboard',
+            'gov-hybrid-translator',
+            [ $this, 'render_dashboard' ]
+        );
+
+        // Submenu: Review Queue
+        add_submenu_page(
+            'gov-hybrid-translator',
+            'Review Queue',
+            'Review Queue',
+            'ght_approve_translation',
+            'gov-hybrid-translator-review',
+            [ $this, 'render_review_queue' ]
+        );
+    }
+    
+    /**
+     * Enqueue Admin Scripts
+     */
+    public function enqueue_admin_assets($hook) {
+        // Load only on our plugin pages
+        if (strpos($hook, 'gov-hybrid-translator') === false) {
+            return;
+        }
+
+        wp_enqueue_script('ght-admin-dashboard', GOV_HYBRID_TRANSLATOR_URL . 'assets/js/admin-dashboard.js', ['jquery'], '2.5.0', true);
+        
+        wp_localize_script('ght-admin-dashboard', 'ghtAdminData', [
+            'nonce_save' => wp_create_nonce('ght_save_translation'),
+            'nonce_translate' => wp_create_nonce('ght_translate_to_language'),
+            'nonce_settings' => wp_create_nonce('ght_save_settings'),
+            'nonce_design_tabs' => wp_create_nonce('ght_design_tabs'),
+            'i18n' => [
+                'error' => __('Error', 'gov-hybrid-translator'),
+                'saved' => __('Saved', 'gov-hybrid-translator')
+            ]
+        ]);
+        
+        // Tailwind CDN (Optional/Dev only) - Explained to User
+        // wp_enqueue_script('ght-tailwind', 'https://cdn.tailwindcss.com', [], null); // Commented out to reduce reliance? No, we need it for UI.
+        // We keep it in the view for now or enqueue here:
+        // wp_enqueue_script('ght-tailwind', 'https://cdn.tailwindcss.com', [], null);
+    }
+
+    /**
+     * แสดงผล Review Queue
+     */
+    public function render_review_queue() {
+        require GOV_HYBRID_TRANSLATOR_PATH . 'inc/Admin/views/review-dashboard-view.php';
     }
 
     /**
