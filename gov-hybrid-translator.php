@@ -9,7 +9,7 @@
  * Domain Path: /languages
  * 
  * Changelog:
- * 2.4.0 - Advanced Translation Workflow, Smart Glossary, Activity Logs Audit Trail, Dashboard Data Fixes
+ * 2.4.0 - Advanced Translation Workflow, Smart Glossary, Activity Logs Audit Trail, Dashboard Data Fixes, GitHub Auto-Update Integration
  * 2.3.0 - Complex HTML translation fix, Delete Translation button, Custom HTML block support
  * 2.2.0 - View Original/Translated tabs, Avada Theme Builder support
  * 2.1.1 - Category-Based Translation Queue, Fixed 404 error on language switch
@@ -62,3 +62,20 @@ register_deactivation_hook( __FILE__, function() {
 	// ลบ Custom Capabilities และล้าง Rewrite Rules
 	\GovHybridTranslator\Core\Loader::deactivate();
 } );
+
+/**
+ * Auto Update Check (GitHub)
+ * Requires 'plugin-update-checker' library in inc/Libraries/
+ */
+$puc_path = plugin_dir_path( __FILE__ ) . 'inc/Libraries/plugin-update-checker/plugin-update-checker.php';
+
+
+if ( file_exists( $puc_path ) ) {
+	require $puc_path;
+	$myUpdateChecker = \YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+		'https://github.com/thitipong-k/Gov-Hybrid-Translator', // GitHub Repo URL
+		__FILE__,
+		'gov-hybrid-translator'
+	);
+	$myUpdateChecker->setBranch('main');
+}
