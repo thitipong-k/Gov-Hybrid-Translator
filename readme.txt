@@ -9,130 +9,133 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 A hybrid translation system (Manual + AI) with Glossary support, Gutenberg blocks, and Elementor page builder translation.
+ระบบแปลภาษาเว็บภาครัฐแบบ Hybrid (Manual + AI) รองรับ Glossary, Gutenberg และ Elementor
 
 == Description ==
 
 Gov Hybrid Translator is designed to streamline the translation workflow for government websites. It uses a Meta-based architecture for storing translations alongside the original content, without creating duplicate posts.
 
-**Key Features:**
+**Gov Hybrid Translator** ถูกออกแบบมาเพื่อเพิ่มประสิทธิภาพกระบวนการแปลภาษาสำหรับเว็บไซต์หน่วยงานราชการ โดยใช้สถาปัตยกรรมแบบ Meta-based สำหรับจัดเก็บข้อมูลการแปลควบคู่ไปกับเนื้อหาต้นฉบับ โดยไม่ต้องสร้าง Post ซ้ำซ้อน
 
-*   **Glossary System**: Manage official terms (Person, Position, Unit) via a Custom Post Type.
-*   **AI-Powered Translation**: Automatic translation using AI with glossary term replacement.
-*   **Gutenberg Support**: Parse and translate Gutenberg block content while preserving structure.
-*   **Elementor Support**: Parse and translate Elementor widget data.
-*   **Auto-Translate on Publish**: Automatically translate when publishing new content.
-*   **Comparison View**: Side-by-side Thai vs English comparison for all translations.
-*   **View Translation Modal**: Quick preview of translated content with copy functionality.
-*   **Routing**: Supports `example.go.th/en/` URL structure.
-*   **Language Switcher**: Configurable language switcher with multiple display options.
-*   **Multi-Language Support**: English, Chinese, Japanese, Korean, German, French.
+**Key Features (คุณสมบัติหลัก):**
+
+*   **Glossary System**: ระบบคลังคำศัพท์เฉพาะ (Manage official terms) จัดการคำศัพท์ราชการ (บุคคล, ตำแหน่ง, หน่วยงาน) ผ่าน Custom Post Type
+*   **AI-Powered Translation**: แปลภาษาอัตโนมัติด้วย AI พร้อมระบบแทนที่คำศัพท์จาก Glossary เพื่อความถูกต้องแม่นยำ
+*   **Gutenberg Support**: รองรับการแปลเนื้อหาจาก Gutenberg Block โดยยังคงโครงสร้างเดิมไว้อย่างสมบูรณ์
+*   **Elementor Support**: รองรับการแปลข้อมูลจาก Elementor Widget
+*   **Auto-Translate on Publish**: แปลภาษาให้อัตโนมัติทันทีที่กดเผยแพร่เนื้อหา (Publish)
+*   **Comparison View**: มุมมองเปรียบเทียบภาษาไทย vs อังกฤษ แบบ Side-by-side
+*   **View Translation Modal**: หน้าต่างดูตัวอย่างเนื้อหาที่แปลแล้ว พร้อมฟังก์ชัน Copy
+*   **Routing**: รองรับโครงสร้าง URL แบบ `example.go.th/en/`
+*   **Language Switcher**: ปุ่มสลับภาษาที่ตั้งค่าการแสดงผลได้หลากหลายรูปแบบ
+*   **Multi-Language Support**: รองรับหลายภาษา (อังกฤษ, จีน, ญี่ปุ่น, เกาหลี, เยอรมัน, ฝรั่งเศส)
 
 == Installation ==
 
-1.  Upload the plugin files to the `/wp-content/plugins/gov-hybrid-translator` directory, or install the plugin through the WordPress plugins screen directly.
-2.  Activate the plugin through the 'Plugins' screen in WordPress.
-3.  Go to "Gov Glossary" to start adding terms.
-4.  Configure settings in "Gov Translator" menu.
-5.  (Optional) Enable Auto-Translate in Settings → Content & SEO.
+1.  อัปโหลดไฟล์ปลั๊กอินไปยังไดเรกทอรี `/wp-content/plugins/gov-hybrid-translator` หรือติดตั้งผ่านหน้า Plugins ของ WordPress โดยตรง
+2.  เปิดใช้งานปลั๊กอิน (Activate) ผ่านหน้า 'Plugins' ใน WordPress
+3.  ไปที่เมนู "Gov Glossary" เพื่อเริ่มเพิ่มคำศัพท์เฉพาะ
+4.  ตั้งค่าการใช้งานที่เมนู "Gov Translator"
+5.  (ทางเลือก) เปิดใช้งาน Auto-Translate ใน Settings → Content & SEO
 
 == Changelog ==
 
 = 2.4.0 =
-*   **NEW**: Advanced Translation Workflow - Draft & Publish Status for translations.
-*   **NEW**: Smart Glossary - Regex-based term replacement with Case Sensitivity support.
-*   **NEW**: Manual Edit Modal - Added "Status" selector (Draft/Published).
-*   **NEW**: Frontend Visibility Control - Draft translations are hidden from public users.
-*   **IMPROVED**: Glossary replacement now safely ignores HTML tags/attributes.
-*   **FIXED**: Double language prefix bug in logo and home links.
-*   **FIXED**: Quick Edit (Save Page Translation) logic to preserve existing status.
+*   **NEW**: Advanced Translation Workflow - เพิ่มสถานะ Draft & Publish สำหรับการแปล
+*   **NEW**: Smart Glossary - ระบบแทนที่คำศัพท์ด้วย Regex รองรับ Case Sensitivity
+*   **NEW**: Manual Edit Modal - เพิ่มตัวเลือก "Status" (Draft/Published) ในหน้าแก้ไข
+*   **NEW**: Frontend Visibility Control - เนื้อหาที่ยังเป็น Draft จะถูกซ่อนจากผู้ใช้งานทั่วไป
+*   **IMPROVED**: ปรับปรุงระบบ Glossary ให้ปลอดภัยขึ้น โดยไม่กระทบกับ HTML tags หรือ attributes
+*   **FIXED**: แก้ไขบั๊ก Language Prefix ซ้ำซ้อนในโลโก้และลิงก์หน้าแรก
+*   **FIXED**: แก้ไขตรรกะ Quick Edit (บันทึกการแปลหน้า) ให้คงสถานะเดิมไว้
 
 = 2.3.0 =
-*   **NEW**: Delete Translation button in Review Content modal.
-*   **NEW**: Custom HTML Block (`core/html`) translation support.
-*   **FIXED**: Complex HTML structure (timeline, nested divs) losing elements during translation.
-*   **IMPROVED**: Smart HTML translation using DOM-based text extraction for complex content.
-*   **IMPROVED**: Added translateHtmlDom() method for better HTML structure preservation.
-*   **SECURITY**: Removed all debug log statements (console.log, error_log).
+*   **NEW**: เพิ่มปุ่มลบเนื้อหาการแปล (Delete Translation) ในหน้าต่าง Review Content
+*   **NEW**: รองรับการแปล Custom HTML Block (`core/html`)
+*   **FIXED**: แก้ไขปัญหาโครงสร้าง HTML ซับซ้อน (timeline, nested divs) หายไปหลังการแปล
+*   **IMPROVED**: ปรับปรุงการแปล HTML ด้วยเทคนิค DOM-based extraction สำหรับเนื้อหาที่ซับซ้อน
+*   **IMPROVED**: เพิ่มเมธอด translateHtmlDom() เพื่อรักษาโครงสร้าง HTML ได้ดียิ่งขึ้น
+*   **SECURITY**: ลบคำสั่ง debug log ทั้งหมด (console.log, error_log) เพื่อความปลอดภัย
 
 = 2.2.0 =
-*   **NEW**: View Original/Translated tabs in Review Content modal.
-*   **NEW**: Avada Theme Builder header/footer rendering for translated pages.
-*   **FIXED**: Header/footer missing on translated internal pages.
-*   **FIXED**: 404 errors on translated page URLs.
+*   **NEW**: เพิ่มแท็บ View Original/Translated ในหน้าต่าง Review Content
+*   **NEW**: รองรับการแสดงผล Header/Footer ของ Avada Theme Builder ในหน้าแปล
+*   **FIXED**: แก้ไขปัญหา Header/Footer หายในหน้าภายในที่แปลแล้ว
+*   **FIXED**: แก้ไข Error 404 ใน URL หน้าภาษาอังกฤษ
 
 = 2.1.0 =
-*   **FIXED**: View Logs and Clear Logs buttons not responding in Advanced Settings.
-*   **FIXED**: Dashboard statistics showing mock data instead of real data.
-*   **FIXED**: Language switcher TH button not working on English pages.
-*   **IMPROVED**: Dashboard now displays real statistics from database (Total Translations, Glossary Terms, AI Credits Used, TM Hit Rate, Language Distribution, Monthly Trends, Top Categories, Recent Translations).
-*   **IMPROVED**: View Logs modal with dark theme terminal-like display.
-*   **IMPROVED**: Clear Logs functionality with confirmation dialog.
+*   **FIXED**: ปุ่ม View Logs และ Clear Logs ใน Advanced Settings ไม่ทำงาน
+*   **FIXED**: แดชบอร์ดแสดงข้อมูลจำลอง (Mock data) แทนข้อมูลจริง
+*   **FIXED**: ปุ่มสลับภาษา TH ไม่ทำงานในหน้าภาษาอังกฤษ
+*   **IMPROVED**: แดชบอร์ดแสดงข้อมูลสถิติจริงจากฐานข้อมูล (จำนวนการแปล, คำศัพท์, เครดิต AI, TM Hit Rate, สัดส่วนภาษา, แนวโน้มรายเดือน, หมวดหมู่ยอดนิยม, การแปลล่าสุด)
+*   **IMPROVED**: หน้าต่าง View Logs ปรับดีไซน์เป็น Dark theme แบบ Terminal
+*   **IMPROVED**: ฟังก์ชัน Clear Logs พร้อมกล่องยืนยันก่อนลบ
 
 = 2.0.0 =
-*   **NEW**: Gutenberg block translation parser - preserves block structure.
-*   **NEW**: Elementor widget translation parser - supports complex widgets.
-*   **NEW**: Auto-Translate on Publish feature with configurable settings.
-*   **NEW**: TH ↔ EN Comparison Tab - view all translations side-by-side.
-*   **NEW**: View Translation Modal - quick preview with copy functionality.
-*   **NEW**: Target language selector in Review Content modal.
-*   **NEW**: Multi-language support (EN, ZH, JA, KO, DE, FR).
-*   **IMPROVED**: Post Contents and Page Contents tabs show English Excerpt.
-*   **IMPROVED**: Content Reviewer with better glossary term detection.
-*   **IMPROVED**: Translation feedback with notifications instead of alerts.
-*   **ARCHITECTURE**: Switched to Meta-based translation storage (no duplicate posts).
-*   Updated plugin description and version.
+*   **NEW**: Gutenberg block translation parser - รักษาระบบโครงสร้างบล็อกขณะแปล
+*   **NEW**: Elementor widget translation parser - รองรับ Widget ที่ซับซ้อน
+*   **NEW**: ฟีเจอร์ Auto-Translate on Publish พร้อมการตั้งค่า
+*   **NEW**: แท็บเปรียบเทียบ TH ↔ EN - ดูเนื้อหาต้นฉบับเทียบกับคำแปลได้ทันที
+*   **NEW**: View Translation Modal - ดูตัวอย่างและ Copy ได้รวดเร็ว
+*   **NEW**: ตัวเลือกภาษาปลายทาง (Target Language) ในหน้า Review Content
+*   **NEW**: รองรับหลายภาษา (EN, ZH, JA, KO, DE, FR)
+*   **IMPROVED**: แท็บ Post/Page Contents แสดง Excerpt ภาษาอังกฤษ
+*   **IMPROVED**: ระบบตรวจทานเนื้อหา (Content Reviewer) ตรวจจับคำศัพท์ Glossary ได้ดียิ่งขึ้น
+*   **IMPROVED**: แจ้งเตือนสถานะการแปล (Notifications) แทนการใช้ Alerts
+*   **ARCHITECTURE**: เปลี่ยนมาใช้ระบบจัดเก็บแบบ Meta-based (ไม่สร้าง Post ซ้ำ)
+*   **Updated**: ปรับปรุงคำอธิบายและเวอร์ชันของปลั๊กอิน
 
 = 1.2.0 =
-*   Fixed language switcher button visibility with fixed/sticky theme headers.
-*   Increased z-index to 999999 for floating button to ensure it appears above fixed headers.
-*   Added Top Offset setting to adjust button position for themes with fixed headers.
-*   Improved CSS transitions for smoother hover effects.
+*   แก้ไขปุ่มสลับภาษาไม่แสดงใน Theme ที่มี Fixed Header
+*   เพิ่ม z-index เป็น 999999 ให้ปุ่ม Floating อยู่เหนือ Elements อื่นๆ
+*   เพิ่มการตั้งค่า Top Offset ปรับตำแหน่งปุ่ม
+*   ปรับปรุง CSS Transition ให้การ Hover นุ่มนวลขึ้น
 
 = 1.1.1 =
-*   Added configurable Language Switcher with settings page.
-*   Added support for Floating, Menu, and Shortcode display modes.
-*   Added Dual Buttons layout (TH | EN side-by-side).
-*   Added Button Content options (Flag Only, Text Only, Both).
-*   Added customizable floating positions (Top-Right, Center-Right, Bottom-Right).
-*   Fixed PHP warning in Router.php for page_link filter.
-*   Improved flag icon styling with smaller size (30px).
+*   เพิ่มหน้าตั้งค่า Language Switcher
+*   รองรับการแสดงผลแบบ Floating, Menu, และ Shortcode
+*   เพิ่ม Layout แบบ Dual Buttons (TH | EN เรียงติดกัน)
+*   เพิ่มตัวเลือกเนื้อหาปุ่ม (ธงอย่างเดียว, ข้อความอย่างเดียว, หรือทั้งคู่)
+*   ปรับแต่งตำแหน่ง Floating ได้ (ขวาบน, ขวากลาง, ขวาล่าง)
+*   แก้ไข Warning PHP ใน Router.php
+*   ปรับขนาดไอคอนธงเป็น 30px
 
 = 1.1.0 =
-*   Initial Release for testing.
-*   Added Glossary Custom Post Type.
-*   Added Hybrid Translation Workflow.
-*   Added Frontend Routing for /en/ URLs.
+*   Initial Release สำหรับทดสอบ
+*   เพิ่มระบบ Glossary Custom Post Type
+*   เพิ่มระบบ Hybrid Translation Workflow
+*   เพิ่มระบบ Frontend Routing สำหรับ URL /en/
 
 == Frequently Asked Questions ==
 
-= Does this plugin create duplicate posts for translations? =
+= ปลั๊กอินนี้สร้าง Post ซ้ำหรือไม่? (Does this plugin create duplicate posts?) =
 
-No. Version 2.0.0 uses a Meta-based architecture that stores translations as post_meta on the original post.
+ไม่ครับ เวอร์ชัน 2.0.0 ขึ้นไปใช้สถาปัตยกรรมแบบ Meta-based โดยเก็บข้อมูลการแปลไว้ใน `post_meta` ของโพสต์ต้นฉบับ ไม่มีการสร้างโพสต์ใหม่ให้รกฐานข้อมูล
 
-= Does it work with Gutenberg? =
+= รองรับ Gutenberg หรือไม่? (Does it work with Gutenberg?) =
 
-Yes! Version 2.0.0 includes a Gutenberg parser that translates block content while preserving block structure.
+รองรับครับ! เวอร์ชัน 2.0.0 มี Parser สำหรับ Gutenberg โดยเฉพาะ สามารถแปลเนื้อหาภายในบล็อกโดยไม่ทำลายโครงสร้าง Layout
 
-= Does it work with Elementor? =
+= รองรับ Elementor หรือไม่? (Does it work with Elementor?) =
 
-Yes! Version 2.0.0 includes an Elementor parser that handles widget data and nested structures.
+รองรับครับ! มี Elementor parser ที่จัดการข้อมูล Widget และโครงสร้างที่ซ้อนกันได้เป็นอย่างดี
 
-= What AI service does it use? =
+= ใช้บริการ AI เจ้าไหน? (What AI service does it use?) =
 
-The plugin uses configurable AI services. Configure your API key in Settings → API Settings.
+ปลั๊กอินรองรับ AI หลายค่ายตามการตั้งค่าของคุณ (เช่น Google, Azure, OpenAI) สามารถกำหนด API Key ได้ที่เมนู Settings → API Settings
 
 == Screenshots ==
 
-1. Dashboard overview
-2. Translation comparison view
-3. Review Content modal
-4. Settings page
-5. Glossary management
+1. Dashboard overview (ภาพรวมแดชบอร์ด)
+2. Translation comparison view (มุมมองเปรียบเทียบคำแปล)
+3. Review Content modal (หน้าต่างตรวจทานเนื้อหา)
+4. Settings page (หน้าตั้งค่า)
+5. Glossary management (ระบบจัดการคำศัพท์)
 
 == Upgrade Notice ==
 
 = 2.1.0 =
-Bug fixes for View Logs functionality and Dashboard statistics now show real data from database.
+แก้ไขบั๊ก View Logs และปรับปรุง Dashboard ให้แสดงข้อมูลสถิติจริงจากฐานข้อมูล
 
 = 2.0.0 =
-Major update with Gutenberg/Elementor support, Auto-Translate feature, and improved UI. Recommended for all users.
+อัปเดตใหญ่ รองรับ Gutenberg/Elementor, ระบบ Auto-Translate และปรับปรุง UI แนะนำให้ผู้ใช้อัปเดตทันที
