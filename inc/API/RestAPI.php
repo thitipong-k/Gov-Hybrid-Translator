@@ -260,9 +260,12 @@ class RestAPI {
             );
         }
 
-        // ตรวจสอบ cache
+        $glossary_replacer = new \GovHybridTranslator\Service\GlossaryReplacer();
+        $glossary_hash = $glossary_replacer->get_glossary_hash();
+
+        // ตรวจสอบ cache (รวม glossary_hash ใน cache key)
         $cache = new TranslationCache();
-        $cache_key = md5($content . '_' . $target_lang);
+        $cache_key = md5($content . '_' . $target_lang . '_' . $glossary_hash);
         $cached = $cache->get($cache_key);
 
         if ($cached !== false) {
@@ -272,9 +275,15 @@ class RestAPI {
             ], 200);
         }
 
+        // Pre-process (Protect Glossary Terms ด้วย Placeholder)
+        $protected = $glossary_replacer->protect_glossary_terms($content, $target_lang);
+
         // แปลด้วย AI
         $ai_service = new AIService();
-        $translated = $ai_service->translate_html($content, $target_lang);
+        $translated_raw = $ai_service->translate_html($protected['protected_content'], $target_lang);
+
+        // Post-process (Restore Glossary Terms)
+        $translated = $glossary_replacer->restore_glossary_terms($translated_raw, $protected['map']);
 
         // บันทึก cache
         $cache->set($cache_key, $translated);

@@ -1,0 +1,9 @@
+@echo off
+if not exist "inc\Libraries" mkdir "inc\Libraries"
+echo Downloading PUC...
+curl -L "https://github.com/YahnisElsts/plugin-update-checker/releases/latest/download/plugin-update-checker.zip" -o "inc\Libraries\puc.zip"
+echo Extracting...
+powershell -Command "Expand-Archive -Path 'inc\Libraries\puc.zip' -DestinationPath 'inc\Libraries\' -Force"
+echo Cleaning up...
+del "inc\Libraries\puc.zip"
+echo Done.

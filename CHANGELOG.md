@@ -2,6 +2,18 @@
 
 การเปลี่ยนแปลงทั้งหมดของ Gov Hybrid Translator plugin
 
+## [2.5.2] - 2026-08-05
+
+### แก้ไข (Fixed)
+- **Pre-Translation Glossary Protection & Restoration**: แก้ไขปัญหาศัพท์เฉพาะใน Glossary ไม่ถูกนำมาใช้เมื่อกดแปล โดยเปลี่ยนจากวิธีแทนที่คำหลังแปล เป็นการซ่อนคำไทยด้วย Placeholder (`{{GLOSSARY_X}}`) **ก่อนส่งแปล AI** แล้วคืนค่าด้วยคำแปลจาก Glossary **หลังแปลเสร็จ**
+- **REST API Glossary Integration**: เพิ่มการใช้งาน Glossary ใน `POST /translate` REST API endpoint
+- **Cache Invalidation**: เพิ่มระบบล้าง Cache อัตโนมัติใน `GlossaryManager` เมื่อมีการสร้าง, แก้ไข หรือลบคำศัพท์ใน Glossary
+
+### เพิ่มเติม (Added)
+- `GlossaryReplacer` Service class สำหรับจัดการ Pre/Post Glossary Protection, Restoration และ Caching
+
+---
+
 ## [2.5.1] - 2026-01-28
 
 ### แก้ไข (Fixed)
@@ -12,7 +24,25 @@
 - **Language Switcher:** แก้ไข logic การบันทึก Checkbox (False values) และกู้คืน Javascript ที่หายไป (Preview/Interactive UI)
 - **Refactor:** ย้าย Inline JavaScript ออกจากไฟล์ PHP view ทั้งหมดไปยัง `admin-dashboard.js` เพื่อประสิทธิภาพและลด Syntax Errors
 
+---
+
 ## [2.5.0] - 2026-01-27
+
+### เพิ่มเติม (Added)
+
+- **Advanced Translation Workflow**: ระบบสถานะ Draft/Publish สำหรับการตรวจสอบก่อนเผยแพร่
+- **Smart Glossary**: ระบบคลังคำศัพท์อัจฉริยะ รองรับ Regex และ Case Insensitivity
+- **Manual Edit**: เพิ่มตัวเลือกสถานะ (Status) ในหน้าต่างแก้ไขงานแปล
+- **Visibility Control**: ซ่อนเนื้อหาฉบับร่าง (Draft) จากผู้ใช้งานทั่วไป (แสดงเฉพาะ Admin)
+
+### แก้ไข (Fixed)
+
+- ปัญหา Double Language Prefix ในลิงก์หน้าแรกและโลโก้ (`/n/en/`)
+- ปัญหาสถานะถูกรีเซ็ตเป็น Published เมื่อใช้ Quick Edit (Save Page Translation)
+
+---
+
+## [2.4.0] - 2026-01-27
 
 ### เพิ่มเติม (Added)
 
@@ -33,6 +63,8 @@
 
 ---
 
+## [2.3.0] - 2026-01-25
+
 ### เพิ่มเติม (Added)
 
 - ปุ่ม **Delete Translation** ใน Review Content modal สำหรับลบ translation ที่มีอยู่
@@ -41,119 +73,58 @@
 
 ### แก้ไข (Fixed)
 
-- แก้ปัญหา HTML ที่ซับซ้อน (timeline, nested divs) สูญหายระหว่างแปล
-- ปรับปรุง HTML structure preservation สำหรับ content ที่มี tags มากกว่า 50 ตัว
-
-### ปรับปรุง (Improved)
-
-- Smart HTML detection: เลือก method แปลที่เหมาะสมตามความซับซ้อนของ HTML
-- เพิ่ม Thai comments ใน code files
-
-### ความปลอดภัย (Security)
-
-- ลบ `console.log` และ `error_log` statements ทั้งหมด
+- **Complex HTML Translation**: แก้ไขปัญหาโครงสร้าง HTML หลุดหายเมื่อแปลด้วย AI
+- **Avada Theme Integration**: เพิ่มการรองรับ Fusion Builder elements และ dynamic data
+- **Duplicate Tags**: ป้องกันการซ้ำซ้อนของ HTML tags หลังแปลเสร็จ
 
 ---
 
-## [2.2.0] - 2024-12-24
+## [2.2.0] - 2026-01-20
 
 ### เพิ่มเติม (Added)
 
-- **View Original/Translated tabs** ใน Review Content modal
-- รองรับ **Avada Theme Builder** header/footer rendering สำหรับ translated pages
+- **Original/Translated View Tabs**: สลับดูเนื้อหาต้นฉบับภาษาไทยและเนื้อหาที่แปลแล้วใน Review Content modal
+- **Avada Theme Builder Support**: รองรับ Header/Footer rendering สำหรับหน้าภาษาอังกฤษ
+- **AJAX Translated Content API**: Endpoint สำหรับดึงเนื้อหาที่แปลแล้วไปแสดงใน Modal
 
 ### แก้ไข (Fixed)
 
-- Header/footer หายไปใน translated internal pages
-- 404 errors สำหรับ translated page URLs
+- ปัญหา 404 Not Found เมื่อเปิดหน้าภาษาอังกฤษที่ใช้ Avada Theme Builder
+- Header/Footer หายในหน้าแปลภาษาอังกฤษ
 
 ---
 
-## [2.1.1] - 2024-12-23
+## [2.1.1] - 2026-01-15
 
 ### เพิ่มเติม (Added)
 
-- Category-Based Translation Queue
+- **Category-Based Queue**: แสดงรายการเนื้อหาที่ยังแปลไม่ครบแยกตามหมวดหมู่ (Categories)
+- **Missing Languages Indicator**: แสดงภาษาที่ยังขาดการแปลของแต่ละ Post/Page
+- **Page Translation List**: แสดงรายการ Pages ที่ยังแปลไม่ครบแยกต่างหาก
 
 ### แก้ไข (Fixed)
 
-- 404 error เมื่อเปลี่ยนภาษา
+- ปัญหา 404 Error เมื่อสลับภาษากลับมาเป็นภาษาไทยบนบางเพจ
 
 ---
 
-## [2.1.0] - 2024-12-22
-
-### แก้ไข (Fixed)
-
-- ปุ่ม View Logs และ Clear Logs ไม่ทำงานใน Advanced Settings
-- Dashboard statistics แสดง mock data แทน real data
-- ปุ่ม TH ใน language switcher ไม่ทำงานใน English pages
-
-### ปรับปรุง (Improved)
-
-- Dashboard แสดงสถิติจริงจาก database
-- View Logs modal แบบ dark theme terminal-like display
-- Clear Logs พร้อม confirmation dialog
-
----
-
-## [2.0.0] - 2024-12-20
+## [2.1.0] - 2026-01-10
 
 ### เพิ่มเติม (Added)
 
-- **Gutenberg block parser** - รักษา block structure ขณะแปล
-- **Elementor widget parser** - รองรับ widgets ที่ซับซ้อน
-- **Auto-Translate on Publish** feature
-- **TH ↔ EN Comparison Tab** - ดู translations แบบ side-by-side
-- **View Translation Modal** - preview พร้อม copy functionality
-- รองรับหลายภาษา (EN, ZH, JA, KO, DE, FR)
-
-### ปรับปรุง (Improved)
-
-- Post Contents และ Page Contents tabs แสดง English Excerpt
-- Content Reviewer ตรวจจับ glossary terms ได้ดีขึ้น
-- Translation feedback ใช้ notifications แทน alerts
-
-### สถาปัตยกรรม (Architecture)
-
-- เปลี่ยนเป็น Meta-based translation storage (ไม่สร้าง duplicate posts)
+- **Multi-language Support**: รองรับภาษาอังกฤษ (EN), จีน (ZH), ญี่ปุ่น (JA), เกาหลี (KO), ฯลฯ
+- **Path-based URLs**: URL โครงสร้าง `example.go.th/en/page-name/`
+- **Real-time Statistics**: แสดงสถิติจริงจาก Database ใน Dashboard
+- **Log Viewer**: ดูและล้าง Activity Logs ใน Advanced Settings
 
 ---
 
-## [1.2.0] - 2024-12-15
-
-### แก้ไข (Fixed)
-
-- Language switcher button visibility กับ fixed/sticky theme headers
-- เพิ่ม z-index เป็น 999999 สำหรับ floating button
+## [2.0.0] - 2026-01-01
 
 ### เพิ่มเติม (Added)
 
-- Top Offset setting สำหรับปรับตำแหน่งปุ่มกับ fixed headers
-- CSS transitions ที่ smoothกว่า
-
----
-
-## [1.1.1] - 2024-12-10
-
-### เพิ่มเติม (Added)
-
-- Configurable Language Switcher พร้อม settings page
-- รองรับ Floating, Menu, และ Shortcode display modes
-- Dual Buttons layout (TH | EN side-by-side)
-- Button Content options (Flag Only, Text Only, Both)
-- Customizable floating positions
-
-### แก้ไข (Fixed)
-
-- PHP warning ใน Router.php สำหรับ page_link filter
-
----
-
-## [1.1.0] - 2024-12-01
-
-### เพิ่มเติม (Added)
-
-- Glossary Custom Post Type
-- Hybrid Translation Workflow
-- Frontend Routing สำหรับ /en/ URLs
+- **Meta-based Architecture**: เก็บเนื้อหาที่แปลใน `post_meta` โดยไม่ต้องสร้าง Duplicate Posts
+- **Gutenberg Parser**: แปล block content โดยยังคงรักษาโครงสร้าง blocks
+- **Elementor Parser**: แปล widget data และ nested elements ของ Elementor
+- **Auto-Translate on Publish**: แปลอัตโนมัติเมื่อกด Publish บทความใหม่
+- **Comparison View**: ดูเนื้อหาภาษาไทยและอังกฤษแบบ side-by-side

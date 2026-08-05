@@ -23,6 +23,7 @@ namespace GovHybridTranslator\Integrations;
 if (!defined('ABSPATH')) exit;
 
 use GovHybridTranslator\Service\AIService;
+use GovHybridTranslator\Service\GlossaryReplacer;
 use GovHybridTranslator\Parsers\GutenbergParser;
 use GovHybridTranslator\Parsers\ElementorParser;
 use GovHybridTranslator\Parsers\FusionParser;
@@ -33,10 +34,10 @@ class Post {
 	 * แปล Post/Page เก็บใน post_meta (ไม่สร้าง Post ใหม่)
 	 * 
 	 * ขั้นตอนการทำงาน:
-	 * 1. ตรวจสอบประเภท content (Classic/Gutenberg/Elementor)
-	 * 2. ดึงเนื้อหาต้นฉบับ
-	 * 3. แปลด้วย AI Service (ผ่าน parser ที่เหมาะสม)
-	 * 4. แทนที่คำด้วย Glossary
+	 * 1. ดึงเนื้อหาต้นฉบับ
+	 * 2. Pre-process ซ่อนคำ Glossary ด้วย Placeholder (GlossaryReplacer)
+	 * 3. แปลเนื้อหาด้วย AI Service (ผ่าน parser ที่เหมาะสม)
+	 * 4. Post-process คืนค่าคำแปลจาก Glossary เข้าสู่ Placeholder
 	 * 5. บันทึกลง post_meta ด้วย TranslationMeta
 	 *
 	 * @param int $post_id Post ID ต้นฉบับ
@@ -52,13 +53,14 @@ class Post {
 			return new \WP_Error( 'invalid_post', 'ไม่พบโพสต์' );
 		}
 
-		// === ขั้นตอนที่ 1: เตรียมเนื้อหาและ AI Service ===
+		// === ขั้นตอนที่ 1: เตรียมเนื้อหา, AI Service และ GlossaryReplacer ===
 		$original_content = $post->post_content;
         $original_title = $post->post_title;
         $original_excerpt = $post->post_excerpt;
         
-        // สร้าง AI Service
+        // สร้าง AI Service & GlossaryReplacer
         $ai_service = new AIService();
+        $glossary_replacer = new GlossaryReplacer();
         
         // === ตรวจสอบว่า AI Provider พร้อมใช้งาน ===
         // ถ้าไม่มี API Key จะ return error แทนที่จะ save Thai content
@@ -70,33 +72,44 @@ class Post {
             );
         }
 
-        // === ขั้นตอนที่ 2: ตรวจสอบประเภท content และแปล ===
-        $translated_content = $this->translate_content_by_type(
+        // === ขั้นตอนที่ 2: Pre-process (Protect Glossary Terms ด้วย Placeholder) ===
+        $protected_content = $glossary_replacer->protect_glossary_terms( $original_content, $target_lang );
+        $protected_title   = $glossary_replacer->protect_glossary_terms( $original_title, $target_lang );
+        $protected_excerpt = !empty($original_excerpt) 
+            ? $glossary_replacer->protect_glossary_terms( $original_excerpt, $target_lang ) 
+            : ['protected_content' => '', 'map' => []];
+
+        // === ขั้นตอนที่ 3: ตรวจสอบประเภท content และแปลด้วย AI ===
+        $translated_content_raw = $this->translate_content_by_type(
             $post_id,
-            $original_content,
+            $protected_content['protected_content'],
             $target_lang,
             $ai_service
         );
 
-        // แปล excerpt ด้วย AI โดยตรง (ไม่มี blocks)
-        $translated_excerpt = !empty($original_excerpt) 
-            ? $ai_service->translate_html( $original_excerpt, $target_lang )
+        // แปล excerpt ด้วย AI โดยตรง
+        $translated_excerpt_raw = !empty($protected_excerpt['protected_content']) 
+            ? $ai_service->translate_html( $protected_excerpt['protected_content'], $target_lang )
             : '';
         
-        // === ขั้นตอนที่ 3: แปล Title ===
-        // ใช้ชื่อที่กำหนดเอง หรือแปลด้วย AI
+        // === ขั้นตอนที่ 4: แปล Title ===
         if ( ! empty( $custom_title ) ) {
-            $translated_title = $custom_title;
+            $translated_title_raw = $custom_title;
         } else {
-            $translated_title = $ai_service->translate_html( $original_title, $target_lang );
+            $translated_title_raw = $ai_service->translate_html( $protected_title['protected_content'], $target_lang );
         }
 
-        // === ขั้นตอนที่ 4: แทนที่คำด้วย Glossary ===
-		$final_content = $this->replace_glossary_terms( $translated_content, $target_lang );
-        $final_title = $this->replace_glossary_terms( $translated_title, $target_lang );
-        $final_excerpt = $this->replace_glossary_terms( $translated_excerpt, $target_lang );
+        // === ขั้นตอนที่ 5: Post-process (Restore Glossary Terms จาก Placeholder) ===
+        $final_content = $glossary_replacer->restore_glossary_terms( $translated_content_raw, $protected_content['map'] );
+        $final_title   = $glossary_replacer->restore_glossary_terms( $translated_title_raw, $protected_title['map'] );
+        $final_excerpt = $glossary_replacer->restore_glossary_terms( $translated_excerpt_raw, $protected_excerpt['map'] );
 
-		// === ขั้นตอนที่ 5: บันทึกลง post_meta ===
+        // Fallback: หากยังมีคำภาษาไทยหลงเหลืออยู่ ให้ลองแทนที่ด้วย replace_glossary_terms
+		$final_content = $this->replace_glossary_terms( $final_content, $target_lang );
+        $final_title   = $this->replace_glossary_terms( $final_title, $target_lang );
+        $final_excerpt = $this->replace_glossary_terms( $final_excerpt, $target_lang );
+
+		// === ขั้นตอนที่ 6: บันทึกลง post_meta ===
 		$result = \GovHybridTranslator\Core\TranslationMeta::save(
 			$post_id,
 			$target_lang,

@@ -3,7 +3,7 @@ Contributors: govtechteam
 Tags: translation, hybrid, glossary, government, multilingual, gutenberg, elementor, avada
 Requires at least: 5.8
 Tested up to: 6.7
-Stable tag: 2.4.0
+Stable tag: 2.5.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -39,6 +39,30 @@ Gov Hybrid Translator is designed to streamline the translation workflow for gov
 5.  (ทางเลือก) เปิดใช้งาน Auto-Translate ใน Settings → Content & SEO
 
 == Changelog ==
+
+= 2.5.2 =
+*   **FIXED**: Glossary term replacement issue where terms were ignored during translation. Implemented Pre-Translation Protection & Post-Translation Restoration using placeholders (`{{GLOSSARY_X}}`).
+*   **NEW**: `GlossaryReplacer` Service class with automated term length sorting, HTML-safe protection, and transient caching.
+*   **NEW**: REST API Glossary integration for `POST /translate` endpoint.
+*   **IMPROVED**: Automatic Glossary cache clearing on term create/update/delete.ง URL แบบ `example.go.th/en/`
+*   **Language Switcher**: ปุ่มสลับภาษาที่ตั้งค่าการแสดงผลได้หลากหลายรูปแบบ
+*   **Multi-Language Support**: รองรับหลายภาษา (อังกฤษ, จีน, ญี่ปุ่น, เกาหลี, เยอรมัน, ฝรั่งเศส)
+
+== Installation ==
+
+1.  อัปโหลดไฟล์ปลั๊กอินไปยังไดเรกทอรี `/wp-content/plugins/gov-hybrid-translator` หรือติดตั้งผ่านหน้า Plugins ของ WordPress โดยตรง
+2.  เปิดใช้งานปลั๊กอิน (Activate) ผ่านหน้า 'Plugins' ใน WordPress
+3.  ไปที่เมนู "Gov Glossary" เพื่อเริ่มเพิ่มคำศัพท์เฉพาะ
+4.  ตั้งค่าการใช้งานที่เมนู "Gov Translator"
+5.  (ทางเลือก) เปิดใช้งาน Auto-Translate ใน Settings → Content & SEO
+
+== Changelog ==
+
+= 2.5.0 =
+*   **FIXED**: Glossary term replacement issue where terms were ignored during translation. Implemented Pre-Translation Protection & Post-Translation Restoration using placeholders (`{{GLOSSARY_X}}`).
+*   **NEW**: `GlossaryReplacer` Service class with automated term length sorting, HTML-safe protection, and transient caching.
+*   **NEW**: REST API Glossary integration for `POST /translate` endpoint.
+*   **IMPROVED**: Automatic Glossary cache clearing on term create/update/delete.
 
 = 2.4.0 =
 *   **NEW**: Advanced Translation Workflow - เพิ่มสถานะ Draft & Publish สำหรับการแปล

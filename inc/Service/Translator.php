@@ -26,39 +26,8 @@ class Translator {
 	 * @return bool|WP_Error true ถ้าสำเร็จ หรือ error
 	 */
 	public function translate_to_english( $post_id, $custom_title = null ) {
-		$post = get_post( $post_id );
-		if ( ! $post ) {
-			return new \WP_Error( 'invalid_post', 'Post not found.' );
-		}
-
-		// 1. Prepare Content
-		$thai_content = $post->post_content;
-        $thai_title = $post->post_title;
-        
-        // AI Translation
-        $ai_service = new AIService();
-        $translated_content = $ai_service->translate_html($thai_content, 'en');
-        
-        if ( ! empty( $custom_title ) ) {
-            $translated_title = $custom_title;
-        } else {
-            $translated_title = $ai_service->translate_html($thai_title, 'en');
-        }
-
-        // Apply Glossary (Force replace after AI)
-		$english_content = $this->replace_glossary_terms( $translated_content );
-        $english_title = $this->replace_glossary_terms( $translated_title );
-
-		// 2. Save to Meta (ไม่สร้าง Post ใหม่)
-		$result = TranslationMeta::save(
-			$post_id,
-			'en',
-			$english_title,
-			$english_content,
-			'' // excerpt
-		);
-
-		return $result ? true : new \WP_Error( 'save_failed', 'Failed to save translation' );
+		$post_translator = new \GovHybridTranslator\Integrations\Post();
+		return $post_translator->translate_to_meta( $post_id, 'en', $custom_title );
 	}
 
 

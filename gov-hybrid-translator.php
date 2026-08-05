@@ -3,12 +3,13 @@
  * Plugin Name: Gov Hybrid Translator
  * Plugin URI:  https://example.go.th
  * Description: ระบบแปลภาษาแบบ Hybrid (Manual + AI) พร้อม Glossary, รองรับ Gutenberg, Elementor และ Avada Theme
- * Version:     2.5.1
+ * Version:     2.5.2
  * Author:      Gov Tech Team
  * Text Domain: gov-hybrid-translator
  * Domain Path: /languages
  * 
  * Changelog:
+ * 2.5.2 - Pre-Translation Glossary Protection & Restoration (Fix Glossary replacement issue), Caching & Auto-Invalidation, REST API Glossary Integration
  * 2.5.1 - แก้ไขบั๊กการบันทึกค่า Settings (API Key, สิทธิ์ผู้ใช้, Content & SEO, UI ปุ่มสลับภาษา) และปรับโครงสร้าง JS
  * 2.5.0 - ระบบแก้ไขหน้าบ้าน (Frontend Editor), Workflow การอนุมัติขั้นสูง, แดชบอร์ดตรวจสอบ, แจ้งเตือนทางอีเมล
  * 2.4.0 - Workflow การแปลขั้นสูง, ระบบคลังคำศัพท์อัจฉริยะ (Smart Glossary), บันทึกกิจกรรม (Activity Logs), แก้ไขข้อมูล Dashboard, เชื่อมต่อ GitHub Auto-Update
@@ -23,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // กำหนดค่าคงที่ของ Plugin
-define( 'GOV_HYBRID_TRANSLATOR_VERSION', '2.5.1' );
+define( 'GOV_HYBRID_TRANSLATOR_VERSION', '2.5.2' );
 define( 'GOV_HYBRID_TRANSLATOR_FILE', __FILE__ );
 define( 'GOV_HYBRID_TRANSLATOR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GOV_HYBRID_TRANSLATOR_URL', plugin_dir_url( __FILE__ ) );

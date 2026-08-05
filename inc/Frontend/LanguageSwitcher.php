@@ -203,6 +203,24 @@ class LanguageSwitcher {
 	 * @see Router::add_rewrite_rules()
 	 */
 	public static function get_current_language() {
+		// === 0. ตรวจสอบจากพารามิเตอร์ $_REQUEST (REST API / AJAX / URL Params) ===
+		$req_lang = $_REQUEST['ght_lang'] ?? $_REQUEST['lang'] ?? '';
+		if ($req_lang && in_array(strtolower($req_lang), Router::SUPPORTED_LANGUAGES, true)) {
+			return strtolower($req_lang);
+		}
+
+		// === 0b. ตรวจสอบจาก HTTP Referer (เมื่อเรียก REST API หรือ AJAX จากหน้าเว็บภาษาอื่น) ===
+		if ((defined('REST_REQUEST') && REST_REQUEST) || wp_doing_ajax() || strpos($_SERVER['REQUEST_URI'] ?? '', '/wp-json/') !== false) {
+			$referer = $_SERVER['HTTP_REFERER'] ?? '';
+			if ($referer) {
+				$referer_path = parse_url($referer, PHP_URL_PATH) ?? '';
+				$languages_pattern = implode('|', Router::SUPPORTED_LANGUAGES);
+				if (preg_match('#/(' . $languages_pattern . ')(/|$)#', $referer_path, $matches)) {
+					return $matches[1];
+				}
+			}
+		}
+
 		// === 1. ตรวจสอบ WordPress Query Var (จาก Router rewrite rules) ===
 		// ค่านี้ถูก set โดย rewrite rules ใน Router.php
 		$lang = Router::get_language_from_query();

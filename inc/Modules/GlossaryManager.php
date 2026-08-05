@@ -182,6 +182,8 @@ class GlossaryManager {
             'en_term' => $data['english_term']
         ]);
 
+        \GovHybridTranslator\Service\GlossaryReplacer::clear_cache();
+
         return $post_id;
     }
 
@@ -224,6 +226,8 @@ class GlossaryManager {
             'changes' => $data
         ]);
 
+        \GovHybridTranslator\Service\GlossaryReplacer::clear_cache();
+
         return true;
     }
 
@@ -257,6 +261,8 @@ class GlossaryManager {
             'term' => $term_name,
             'en_term' => $term_en
         ]);
+
+        \GovHybridTranslator\Service\GlossaryReplacer::clear_cache();
 
         return true;
     }
