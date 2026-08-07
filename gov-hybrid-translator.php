@@ -82,4 +82,17 @@ if ( file_exists( $puc_path ) ) {
 		'gov-hybrid-translator'
 	);
 	$myUpdateChecker->setBranch('main');
+
+	// เพิ่มรูปภาพไอคอนของปลั๊กอินในการแสดงผลหน้าอัปเดต
+	$myUpdateChecker->addResultFilter(function ($info) {
+		if ($info) {
+			$plugin_url = plugin_dir_url(__FILE__);
+			$info->icons = [
+				'1x'      => $plugin_url . 'assets/images/icon-128x128.png',
+				'2x'      => $plugin_url . 'assets/images/icon-256x256.png',
+				'default' => $plugin_url . 'assets/images/icon-256x256.png'
+			];
+		}
+		return $info;
+	});
 }
