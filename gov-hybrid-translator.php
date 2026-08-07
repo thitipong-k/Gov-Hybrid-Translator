@@ -3,12 +3,13 @@
  * Plugin Name: Gov Hybrid Translator
  * Plugin URI:  https://example.go.th
  * Description: ระบบแปลภาษาแบบ Hybrid (Manual + AI) พร้อม Glossary, รองรับ Gutenberg, Elementor และ Avada Theme
- * Version:     2.5.5
+ * Version:     2.5.6
  * Author:      Gov Tech Team
  * Text Domain: gov-hybrid-translator
  * Domain Path: /languages
  * 
  * Changelog:
+ * 2.5.6 - อัปเดตที่อยู่ไฟล์ Screenshots ชี้ไปยัง assets/images/ และเพิ่มรูปตัวอย่างระบบ
  * 2.5.5 - ปรับปรุงการแสดงผลรูปภาพตัวอย่างหน้าจอ (Screenshots) ในหน้ารายละเอียด โดยดึงข้อมูลผ่าน GitHub
  * 2.5.4 - ปรับปรุงความปลอดภัยแยกส่วนการตรวจสอบ Nonce (CSRF) และสิทธิ์การใช้งาน (Privilege Escalation) ในการตรวจสอบ AJAX
  * 2.5.3 - แก้ไขปุ่มซ้อนทับกันใน Modal ท้ายหน้าจอ และแก้ไข Internal Server Error (500) จากฟังก์ชันล้างแคช wp_cache_delete_group
@@ -27,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // กำหนดค่าคงที่ของ Plugin
-define( 'GOV_HYBRID_TRANSLATOR_VERSION', '2.5.5' );
+define( 'GOV_HYBRID_TRANSLATOR_VERSION', '2.5.6' );
 define( 'GOV_HYBRID_TRANSLATOR_FILE', __FILE__ );
 define( 'GOV_HYBRID_TRANSLATOR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GOV_HYBRID_TRANSLATOR_URL', plugin_dir_url( __FILE__ ) );
@@ -99,7 +100,7 @@ if ( file_exists( $puc_path ) ) {
 			if (isset($info->sections['screenshots'])) {
 				$info->sections['screenshots'] = str_replace(
 					'https://ps.w.org/gov-hybrid-translator/assets/',
-					'https://raw.githubusercontent.com/thitipong-k/Gov-Hybrid-Translator/main/assets/',
+					'https://raw.githubusercontent.com/thitipong-k/Gov-Hybrid-Translator/main/assets/images/',
 					$info->sections['screenshots']
 				);
 			}
