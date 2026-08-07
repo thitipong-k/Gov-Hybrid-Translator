@@ -3,12 +3,13 @@
  * Plugin Name: Gov Hybrid Translator
  * Plugin URI:  https://example.go.th
  * Description: ระบบแปลภาษาแบบ Hybrid (Manual + AI) พร้อม Glossary, รองรับ Gutenberg, Elementor และ Avada Theme
- * Version:     2.5.4
+ * Version:     2.5.5
  * Author:      Gov Tech Team
  * Text Domain: gov-hybrid-translator
  * Domain Path: /languages
  * 
  * Changelog:
+ * 2.5.5 - ปรับปรุงการแสดงผลรูปภาพตัวอย่างหน้าจอ (Screenshots) ในหน้ารายละเอียด โดยดึงข้อมูลผ่าน GitHub
  * 2.5.4 - ปรับปรุงความปลอดภัยแยกส่วนการตรวจสอบ Nonce (CSRF) และสิทธิ์การใช้งาน (Privilege Escalation) ในการตรวจสอบ AJAX
  * 2.5.3 - แก้ไขปุ่มซ้อนทับกันใน Modal ท้ายหน้าจอ และแก้ไข Internal Server Error (500) จากฟังก์ชันล้างแคช wp_cache_delete_group
  * 2.5.2 - Pre-Translation Glossary Protection & Restoration (Fix Glossary replacement issue), Caching & Auto-Invalidation, REST API Glossary Integration
@@ -26,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // กำหนดค่าคงที่ของ Plugin
-define( 'GOV_HYBRID_TRANSLATOR_VERSION', '2.5.4' );
+define( 'GOV_HYBRID_TRANSLATOR_VERSION', '2.5.5' );
 define( 'GOV_HYBRID_TRANSLATOR_FILE', __FILE__ );
 define( 'GOV_HYBRID_TRANSLATOR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GOV_HYBRID_TRANSLATOR_URL', plugin_dir_url( __FILE__ ) );
@@ -93,6 +94,15 @@ if ( file_exists( $puc_path ) ) {
 				'2x'      => $plugin_url . 'assets/images/icon-256x256.png',
 				'default' => $plugin_url . 'assets/images/icon-256x256.png'
 			];
+
+			// แทนที่ลิงก์รูปภาพในหน้ารายละเอียดปลั๊กอิน (Screenshots) ให้ชี้ไปยัง GitHub แทน WordPress.org
+			if (isset($info->sections['screenshots'])) {
+				$info->sections['screenshots'] = str_replace(
+					'https://ps.w.org/gov-hybrid-translator/assets/',
+					'https://raw.githubusercontent.com/thitipong-k/Gov-Hybrid-Translator/main/assets/',
+					$info->sections['screenshots']
+				);
+			}
 		}
 		return $info;
 	});
