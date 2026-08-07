@@ -1,0 +1,9 @@
+# ละเว้นโฟลเดอร์และไฟล์สำหรับพัฒนา ไม่ให้บีบอัดลง Zip ตอนอัปเดต
+Plan/ export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+download_puc.php export-ignore
+download_puc.ps1 export-ignore
+install_puc.ps1 export-ignore
+install_puc.bat export-ignore
+READ_ME_INSTALL_PUC.txt export-ignore
