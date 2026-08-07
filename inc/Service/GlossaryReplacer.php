@@ -193,6 +193,12 @@ class GlossaryReplacer {
      * ล้าง Cache ของ Glossary terms ทั้งหมด
      */
     public static function clear_cache() {
-        wp_cache_delete_group('gov_hybrid_translator');
+        $settings = get_option('ght_settings', []);
+        $target_languages = isset($settings['target_languages']) ? (array) $settings['target_languages'] : ['en'];
+        $target_languages[] = 'en'; // ตรวจสอบให้มั่นใจว่ารวมภาษาอังกฤษด้วย
+        
+        foreach (array_unique($target_languages) as $lang) {
+            wp_cache_delete(self::CACHE_KEY_PREFIX . $lang, 'gov_hybrid_translator');
+        }
     }
 }

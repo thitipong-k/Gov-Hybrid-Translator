@@ -1,5 +1,5 @@
 /**
- * Glossary Management JavaScript
+ * สคริปต์จัดการระบบคำศัพท์เฉพาะ (Glossary)
  */
 
 (function ($) {
@@ -15,55 +15,74 @@
             this.bindEvents();
         },
 
+        getNonce() {
+            if (typeof ghtData !== 'undefined' && ghtData.nonce) return ghtData.nonce;
+            if (typeof ghtAdminData !== 'undefined' && ghtAdminData.nonce_save) return ghtAdminData.nonce_save;
+            return '';
+        },
+
+        getAjaxUrl() {
+            if (typeof ghtData !== 'undefined' && ghtData.ajaxUrl) return ghtData.ajaxUrl;
+            if (typeof ghtAdminData !== 'undefined' && ghtAdminData.ajaxUrl) return ghtAdminData.ajaxUrl;
+            if (typeof ajaxurl !== 'undefined') return ajaxurl;
+            return '/wp-admin/admin-ajax.php';
+        },
+
         bindEvents() {
-            // Add term button
+            // ป้องกันการส่งฟอร์มเมื่อกด Enter
+            $('#ght-term-form').on('submit', (e) => {
+                e.preventDefault();
+                this.saveTerm();
+            });
+
+            // ปุ่มเพิ่มคำศัพท์
             $('#ght-add-term-btn').on('click', () => this.openAddModal());
 
-            // Edit term buttons
+            // ปุ่มแก้ไขคำศัพท์
             $(document).on('click', '.ght-edit-term', (e) => {
                 const termId = $(e.currentTarget).data('term-id');
                 this.openEditModal(termId);
             });
 
-            // Delete term buttons
+            // ปุ่มลบคำศัพท์
             $(document).on('click', '.ght-delete-term', (e) => {
                 const termId = $(e.currentTarget).data('term-id');
                 this.openDeleteModal(termId);
             });
 
-            // Save term button
+            // ปุ่มบันทึกคำศัพท์
             $('#ght-save-term-btn').on('click', () => this.saveTerm());
 
-            // Confirm delete button
+            // ปุ่มยืนยันการลบ
             $('#ght-confirm-delete-btn').on('click', () => this.deleteTerm());
 
-            // Modal close buttons
+            // ปุ่มปิดกล่องข้อความ (Modal)
             $('.ght-modal-close').on('click', () => this.closeModals());
 
-            // Close modal on outside click
+            // ปิดกล่องข้อความเมื่อคลิกพื้นที่ด้านนอก
             $('.ght-modal').on('click', (e) => {
                 if ($(e.target).hasClass('ght-modal')) {
                     this.closeModals();
                 }
             });
 
-            // Search
+            // การค้นหา
             $('#ght-search-btn').on('click', () => this.performSearch());
             $('#ght-glossary-search').on('keypress', (e) => {
                 if (e.which === 13) this.performSearch();
             });
 
-            // Clear search
+            // ล้างการค้นหา
             $('#ght-clear-search-btn').on('click', () => this.clearSearch());
 
-            // Category filter
+            // ตัวกรองหมวดหมู่
             $('#ght-category-filter').on('change', (e) => {
                 this.currentCategory = $(e.target).val();
                 this.currentPage = 1;
                 this.loadTerms();
             });
 
-            // Pagination
+            // แบ่งหน้า (Pagination)
             $(document).on('click', '.ght-page-btn', (e) => {
                 const page = parseInt($(e.currentTarget).data('page'));
                 this.currentPage = page;
@@ -81,36 +100,46 @@
             $('#ght-thai-term').val('');
             $('#ght-english-term').val('');
             $('#ght-term-category').val('other');
-            $('#ght-term-modal').fadeIn(200);
+            $('#ght-term-modal').addClass('active').hide().fadeIn(200);
         },
 
         openEditModal(termId) {
-            // Get term data from table row
             const $row = $(`tr[data-term-id="${termId}"]`);
-            const thaiTerm = $row.find('.col-thai').text();
-            const englishTerm = $row.find('.col-english').text();
-            const categorySlug = $row.find('.ght-category-badge').attr('class').match(/ght-cat-(\w+)/)[1];
+            const thaiTerm = $row.find('.col-thai').text().trim();
+            const englishTerm = $row.find('.col-english').text().trim();
+            
+            let categorySlug = 'other';
+            const badge = $row.find('.ght-category-badge');
+            if (badge.length && badge.attr('class')) {
+                const match = badge.attr('class').match(/ght-cat-([a-zA-Z0-9_-]+)/);
+                if (match) categorySlug = match[1];
+            }
 
             $('#ght-modal-title').text('แก้ไขคำศัพท์');
             $('#ght-term-id').val(termId);
             $('#ght-thai-term').val(thaiTerm);
             $('#ght-english-term').val(englishTerm);
             $('#ght-term-category').val(categorySlug);
-            $('#ght-term-modal').fadeIn(200);
+            $('#ght-term-modal').addClass('active').hide().fadeIn(200);
         },
 
         openDeleteModal(termId) {
             const $row = $(`tr[data-term-id="${termId}"]`);
-            const thaiTerm = $row.find('.col-thai').text();
-            const englishTerm = $row.find('.col-english').text();
+            const thaiTerm = $row.find('.col-thai').text().trim();
+            const englishTerm = $row.find('.col-english').text().trim();
 
             $('#ght-delete-term-id').val(termId);
             $('#ght-delete-term-name').text(`${thaiTerm} (${englishTerm})`);
-            $('#ght-delete-modal').fadeIn(200);
+            $('#ght-delete-modal').addClass('active').hide().fadeIn(200);
         },
 
         closeModals() {
-            $('.ght-modal').fadeOut(200);
+            $('.ght-modal').fadeOut(150, function() {
+                $(this).removeClass('active');
+            });
+            $('#ght-term-id').val('');
+            $('#ght-thai-term').val('');
+            $('#ght-english-term').val('');
         },
 
         saveTerm() {
@@ -119,7 +148,6 @@
             const englishTerm = $('#ght-english-term').val().trim();
             const category = $('#ght-term-category').val();
 
-            // Validation
             if (!thaiTerm || !englishTerm) {
                 alert('กรุณากรอกข้อมูลให้ครบถ้วน');
                 return;
@@ -128,7 +156,7 @@
             const action = termId ? 'ght_update_glossary_term' : 'ght_create_glossary_term';
             const data = {
                 action: action,
-                nonce: ghtData.nonce,
+                nonce: this.getNonce(),
                 thai_term: thaiTerm,
                 english_term: englishTerm,
                 category: category
@@ -138,44 +166,50 @@
                 data.term_id = termId;
             }
 
-            $('#ght-save-term-btn').prop('disabled', true).text('กำลังบันทึก...');
+            const $btn = $('#ght-save-term-btn');
+            $btn.prop('disabled', true).text('กำลังบันทึก...');
 
-            $.post(ghtData.ajaxUrl, data, (response) => {
-                if (response.success) {
-                    this.showNotification(response.data.message, 'success');
+            $.post(this.getAjaxUrl(), data, (response) => {
+                if (response && response.success) {
+                    const message = (response.data && response.data.message) ? response.data.message : 'บันทึกคำศัพท์เรียบร้อยแล้ว';
+                    this.showNotification(message, 'success');
                     this.closeModals();
                     this.loadTerms();
                 } else {
-                    this.showNotification(response.data.message || 'เกิดข้อผิดพลาด', 'error');
+                    const message = (response && response.data && response.data.message) ? response.data.message : 'เกิดข้อผิดพลาดในการบันทึกข้อมูล';
+                    this.showNotification(message, 'error');
                 }
-            }).fail(() => {
-                this.showNotification('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+            }).fail((xhr, status, error) => {
+                this.showNotification('เกิดข้อผิดพลาดในการเชื่อมต่อ (' + (error || status) + ')', 'error');
             }).always(() => {
-                $('#ght-save-term-btn').prop('disabled', false).html('<span class="dashicons dashicons-yes"></span> บันทึก');
+                $btn.prop('disabled', false).html('<span class="dashicons dashicons-yes"></span> บันทึก');
             });
         },
 
         deleteTerm() {
             const termId = $('#ght-delete-term-id').val();
+            const $btn = $('#ght-confirm-delete-btn');
 
-            $('#ght-confirm-delete-btn').prop('disabled', true).text('กำลังลบ...');
+            $btn.prop('disabled', true).text('กำลังลบ...');
 
-            $.post(ghtData.ajaxUrl, {
+            $.post(this.getAjaxUrl(), {
                 action: 'ght_delete_glossary_term',
-                nonce: ghtData.nonce,
+                nonce: this.getNonce(),
                 term_id: termId
             }, (response) => {
-                if (response.success) {
-                    this.showNotification(response.data.message, 'success');
+                if (response && response.success) {
+                    const message = (response.data && response.data.message) ? response.data.message : 'ลบคำศัพท์เรียบร้อยแล้ว';
+                    this.showNotification(message, 'success');
                     this.closeModals();
                     this.loadTerms();
                 } else {
-                    this.showNotification(response.data.message || 'เกิดข้อผิดพลาด', 'error');
+                    const message = (response && response.data && response.data.message) ? response.data.message : 'เกิดข้อผิดพลาดในการลบ';
+                    this.showNotification(message, 'error');
                 }
-            }).fail(() => {
-                this.showNotification('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+            }).fail((xhr, status, error) => {
+                this.showNotification('เกิดข้อผิดพลาดในการเชื่อมต่อ (' + (error || status) + ')', 'error');
             }).always(() => {
-                $('#ght-confirm-delete-btn').prop('disabled', false).html('<span class="dashicons dashicons-trash"></span> ลบ');
+                $btn.prop('disabled', false).html('<span class="dashicons dashicons-trash"></span> ลบ');
             });
         },
 
@@ -194,16 +228,17 @@
 
             $('.ght-glossary-table-wrapper').addClass('ght-loading');
 
-            $.post(ghtData.ajaxUrl, {
+            $.post(this.getAjaxUrl(), {
                 action: 'ght_search_glossary',
-                nonce: ghtData.nonce,
+                nonce: this.getNonce(),
                 query: query,
                 page: this.currentPage
             }, (response) => {
-                if (response.success) {
+                if (response && response.success) {
                     this.renderTerms(response.data);
                 } else {
-                    this.showNotification(response.data.message || 'เกิดข้อผิดพลาด', 'error');
+                    const message = (response && response.data && response.data.message) ? response.data.message : 'เกิดข้อผิดพลาดในการค้นหา';
+                    this.showNotification(message, 'error');
                 }
             }).fail(() => {
                 this.showNotification('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
@@ -224,16 +259,17 @@
         loadTerms() {
             $('.ght-glossary-table-wrapper').addClass('ght-loading');
 
-            $.post(ghtData.ajaxUrl, {
+            $.post(this.getAjaxUrl(), {
                 action: 'ght_get_glossary_terms',
-                nonce: ghtData.nonce,
+                nonce: this.getNonce(),
                 page: this.currentPage,
                 category: this.currentCategory
             }, (response) => {
-                if (response.success) {
+                if (response && response.success) {
                     this.renderTerms(response.data);
                 } else {
-                    this.showNotification(response.data.message || 'เกิดข้อผิดพลาด', 'error');
+                    const message = (response && response.data && response.data.message) ? response.data.message : 'เกิดข้อผิดพลาดในการโหลดข้อมูล';
+                    this.showNotification(message, 'error');
                 }
             }).fail(() => {
                 this.showNotification('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
@@ -246,7 +282,7 @@
             const $tbody = $('#ght-glossary-tbody');
             $tbody.empty();
 
-            if (data.terms.length === 0) {
+            if (!data || !data.terms || data.terms.length === 0) {
                 $tbody.append(`
                     <tr class="ght-no-terms">
                         <td colspan="4" style="text-align:center; padding: 40px;">
@@ -285,7 +321,7 @@
             const $pagination = $('#ght-glossary-pagination');
             $pagination.empty();
 
-            if (data.pages > 1) {
+            if (data && data.pages > 1) {
                 $pagination.append(`
                     <button type="button" class="button ght-page-btn" data-page="1" ${data.current_page == 1 ? 'disabled' : ''}>
                         « แรก
@@ -310,7 +346,7 @@
         showNotification(message, type = 'success') {
             const className = type === 'success' ? 'notice-success' : 'notice-error';
             const $notice = $(`
-                <div class="notice ${className} is-dismissible" style="margin: 10px 0;">
+                <div class="notice ${className} is-dismissible" style="margin: 10px 0; z-index: 99999; position: relative;">
                     <p>${message}</p>
                 </div>
             `);
@@ -321,17 +357,17 @@
                 $notice.fadeOut(300, function () {
                     $(this).remove();
                 });
-            }, 3000);
+            }, 3500);
         },
 
         escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
     };
 
-    // Initialize on document ready
     $(document).ready(() => {
         GlossaryManager.init();
     });

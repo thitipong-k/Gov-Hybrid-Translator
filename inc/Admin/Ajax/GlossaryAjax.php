@@ -38,13 +38,17 @@ class GlossaryAjax {
      * ดึงรายการคำศัพท์ทั้งหมด
      * รองรับ pagination และ filter ตาม category
      */
-    public function get_glossary_terms() {
-        check_ajax_referer('ght_save_translation', 'nonce');
+    private function verify_request() {
+        $nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
+        $valid_nonce = wp_verify_nonce($nonce, 'ght_save_translation') || wp_verify_nonce($nonce, 'ght_save_settings');
 
-        // ตรวจสอบสิทธิ์ - ต้องมี ght_manage_glossary
-        if (!Capabilities::can_manage_glossary()) {
-            wp_send_json_error(['message' => 'Permission denied']);
+        if (!$valid_nonce && !Capabilities::can_manage_glossary() && !current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Security check failed (Invalid Nonce or Permission Denied)']);
         }
+    }
+
+    public function get_glossary_terms() {
+        $this->verify_request();
 
         $manager = new GlossaryManager();
         $page = isset($_POST['page']) ? absint($_POST['page']) : 1;
@@ -60,12 +64,7 @@ class GlossaryAjax {
     }
 
     public function search_glossary() {
-        check_ajax_referer('ght_save_translation', 'nonce');
-
-        // ตรวจสอบสิทธิ์ - ต้องมี ght_manage_glossary
-        if (!Capabilities::can_manage_glossary()) {
-            wp_send_json_error(['message' => 'Permission denied']);
-        }
+        $this->verify_request();
 
         $query = isset($_POST['query']) ? sanitize_text_field($_POST['query']) : '';
         $page = isset($_POST['page']) ? absint($_POST['page']) : 1;
@@ -80,12 +79,7 @@ class GlossaryAjax {
     }
 
     public function create_glossary_term() {
-        check_ajax_referer('ght_save_translation', 'nonce');
-
-        // ตรวจสอบสิทธิ์ - ต้องมี ght_manage_glossary
-        if (!Capabilities::can_manage_glossary()) {
-            wp_send_json_error(['message' => 'Permission denied']);
-        }
+        $this->verify_request();
 
         $data = [
             'thai_term' => isset($_POST['thai_term']) ? sanitize_text_field($_POST['thai_term']) : '',
@@ -101,18 +95,13 @@ class GlossaryAjax {
         }
 
         wp_send_json_success([
-            'message' => 'Glossary term created successfully',
+            'message' => 'บันทึกคำศัพท์ใหม่เรียบร้อยแล้ว',
             'term_id' => $result
         ]);
     }
 
     public function update_glossary_term() {
-        check_ajax_referer('ght_save_translation', 'nonce');
-
-        // ตรวจสอบสิทธิ์ - ต้องมี ght_manage_glossary
-        if (!Capabilities::can_manage_glossary()) {
-            wp_send_json_error(['message' => 'Permission denied']);
-        }
+        $this->verify_request();
 
         $term_id = isset($_POST['term_id']) ? absint($_POST['term_id']) : 0;
         $data = [
@@ -128,16 +117,11 @@ class GlossaryAjax {
             wp_send_json_error(['message' => $result->get_error_message()]);
         }
 
-        wp_send_json_success(['message' => 'Glossary term updated successfully']);
+        wp_send_json_success(['message' => 'อัปเดตคำศัพท์เรียบร้อยแล้ว']);
     }
 
     public function delete_glossary_term() {
-        check_ajax_referer('ght_save_translation', 'nonce');
-
-        // ตรวจสอบสิทธิ์ - ต้องมี ght_manage_glossary
-        if (!Capabilities::can_manage_glossary()) {
-            wp_send_json_error(['message' => 'Permission denied']);
-        }
+        $this->verify_request();
 
         $term_id = isset($_POST['term_id']) ? absint($_POST['term_id']) : 0;
 
@@ -148,16 +132,11 @@ class GlossaryAjax {
             wp_send_json_error(['message' => $result->get_error_message()]);
         }
 
-        wp_send_json_success(['message' => 'Glossary term deleted successfully']);
+        wp_send_json_success(['message' => 'ลบคำศัพท์เรียบร้อยแล้ว']);
     }
 
     public function get_glossary_categories() {
-        check_ajax_referer('ght_save_translation', 'nonce');
-
-        // ตรวจสอบสิทธิ์ - ต้องมี ght_manage_glossary
-        if (!Capabilities::can_manage_glossary()) {
-            wp_send_json_error(['message' => 'Permission denied']);
-        }
+        $this->verify_request();
 
         $manager = new GlossaryManager();
         $categories = $manager->get_categories();

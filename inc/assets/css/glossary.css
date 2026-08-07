@@ -149,9 +149,13 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 100000;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
+}
+
+.ght-modal.active {
+    display: flex;
 }
 
 .ght-modal-content {
@@ -182,7 +186,7 @@
     color: #333;
 }
 
-.ght-modal-close {
+.ght-modal-header .ght-modal-close {
     background: none;
     border: none;
     font-size: 28px;
@@ -198,7 +202,7 @@
     transition: all 0.2s;
 }
 
-.ght-modal-close:hover {
+.ght-modal-header .ght-modal-close:hover {
     background: #f5f5f5;
     color: #333;
 }
