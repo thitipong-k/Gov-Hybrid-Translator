@@ -3,12 +3,13 @@
  * Plugin Name: Gov Hybrid Translator
  * Plugin URI:  https://example.go.th
  * Description: ระบบแปลภาษาแบบ Hybrid (Manual + AI) พร้อม Glossary, รองรับ Gutenberg, Elementor และ Avada Theme
- * Version:     2.5.6
+ * Version:     2.5.7
  * Author:      Gov Tech Team
  * Text Domain: gov-hybrid-translator
  * Domain Path: /languages
  * 
  * Changelog:
+ * 2.5.7 - แก้ไขการสร้างแท็กรูปภาพตัวอย่างหน้าจอ (Screenshots) ในรายละเอียดปลั๊กอินให้แสดงรูปจริงจาก GitHub
  * 2.5.6 - อัปเดตที่อยู่ไฟล์ Screenshots ชี้ไปยัง assets/images/ และเพิ่มรูปตัวอย่างระบบ
  * 2.5.5 - ปรับปรุงการแสดงผลรูปภาพตัวอย่างหน้าจอ (Screenshots) ในหน้ารายละเอียด โดยดึงข้อมูลผ่าน GitHub
  * 2.5.4 - ปรับปรุงความปลอดภัยแยกส่วนการตรวจสอบ Nonce (CSRF) และสิทธิ์การใช้งาน (Privilege Escalation) ในการตรวจสอบ AJAX
@@ -28,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // กำหนดค่าคงที่ของ Plugin
-define( 'GOV_HYBRID_TRANSLATOR_VERSION', '2.5.6' );
+define( 'GOV_HYBRID_TRANSLATOR_VERSION', '2.5.7' );
 define( 'GOV_HYBRID_TRANSLATOR_FILE', __FILE__ );
 define( 'GOV_HYBRID_TRANSLATOR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GOV_HYBRID_TRANSLATOR_URL', plugin_dir_url( __FILE__ ) );
@@ -96,13 +97,28 @@ if ( file_exists( $puc_path ) ) {
 				'default' => $plugin_url . 'assets/images/icon-256x256.png'
 			];
 
-			// แทนที่ลิงก์รูปภาพในหน้ารายละเอียดปลั๊กอิน (Screenshots) ให้ชี้ไปยัง GitHub แทน WordPress.org
+			// แปลงรายการข้อความในแท็บ Screenshots จาก readme.txt ให้กลายเป็นรูปภาพจริงที่ดึงจาก GitHub
 			if (isset($info->sections['screenshots'])) {
-				$info->sections['screenshots'] = str_replace(
-					'https://ps.w.org/gov-hybrid-translator/assets/',
-					'https://raw.githubusercontent.com/thitipong-k/Gov-Hybrid-Translator/main/assets/images/',
-					$info->sections['screenshots']
-				);
+				$github_assets_url = 'https://raw.githubusercontent.com/thitipong-k/Gov-Hybrid-Translator/main/assets/images/';
+				preg_match_all('|<li>(.*?)</li>|s', $info->sections['screenshots'], $matches, PREG_SET_ORDER);
+				
+				if (!empty($matches)) {
+					$html = '<ol>';
+					foreach ($matches as $index => $match) {
+						$num = $index + 1;
+						$text = trim($match[1]);
+						$img_url = $github_assets_url . "screenshot-{$num}.png";
+						
+						$html .= '<li style="margin-bottom: 25px; list-style-type: decimal;">';
+						$html .= '<p style="font-weight: bold; margin-bottom: 8px;">' . $text . '</p>';
+						$html .= '<a href="' . $img_url . '" target="_blank" style="display: block;">';
+						$html .= '<img src="' . $img_url . '" alt="' . esc_attr($text) . '" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); display: block;" />';
+						$html .= '</a>';
+						$html .= '</li>';
+					}
+					$html .= '</ol>';
+					$info->sections['screenshots'] = $html;
+				}
 			}
 		}
 		return $info;

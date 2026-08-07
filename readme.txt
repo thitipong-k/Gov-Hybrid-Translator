@@ -3,7 +3,7 @@ Contributors: govtechteam
 Tags: translation, hybrid, glossary, government, multilingual, gutenberg
 Requires at least: 5.8
 Tested up to: 7.1
-Stable tag: 2.5.6
+Stable tag: 2.5.7
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -39,6 +39,9 @@ Gov Hybrid Translator is designed to streamline the translation workflow for gov
 5.  (ทางเลือก) เปิดใช้งาน Auto-Translate ใน Settings → Content & SEO
 
 == Changelog ==
+
+= 2.5.7 =
+*   **FIXED**: Injected actual `<img>` tags for screenshots by parsing the list items, allowing screenshot images to display directly from GitHub in the updates details modal.
 
 = 2.5.6 =
 *   **IMPROVED**: Corrected screenshots redirection folder path to `assets/images/` to match the actual folder location of screenshot files.
