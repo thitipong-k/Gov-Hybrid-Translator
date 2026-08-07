@@ -1,6 +1,6 @@
 === Gov Hybrid Translator ===
 Contributors: govtechteam
-Tags: translation, hybrid, glossary, government, multilingual, gutenberg, elementor, avada
+Tags: translation, hybrid, glossary, government, multilingual, gutenberg
 Requires at least: 5.8
 Tested up to: 6.7
 Stable tag: 2.5.4
