@@ -39,11 +39,16 @@ class GlossaryAjax {
      * รองรับ pagination และ filter ตาม category
      */
     private function verify_request() {
+        // 1. ตรวจสอบ Nonce ป้องกันการโจมตีประเภท CSRF
         $nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
         $valid_nonce = wp_verify_nonce($nonce, 'ght_save_translation') || wp_verify_nonce($nonce, 'ght_save_settings');
+        if (!$valid_nonce) {
+            wp_send_json_error(['message' => 'Security check failed (Invalid Nonce)'], 403);
+        }
 
-        if (!$valid_nonce && !Capabilities::can_manage_glossary() && !current_user_can('manage_options')) {
-            wp_send_json_error(['message' => 'Security check failed (Invalid Nonce or Permission Denied)']);
+        // 2. ตรวจสอบสิทธิ์การเข้าถึงข้อมูล (Authorization)
+        if (!Capabilities::can_manage_glossary() && !current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Permission denied'], 403);
         }
     }
 
